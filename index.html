@@ -6,6 +6,37 @@
 <title>CCNG — Sistema de Administración</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyjDTwaHqtXCZZmEcxkzqDQaYCQEurcSc",
+    authDomain: "ccng-admin.firebaseapp.com",
+    projectId: "ccng-admin",
+    storageBucket: "ccng-admin.firebasestorage.app",
+    messagingSenderId: "564357198375",
+    appId: "1:564357198375:web:b14413f57c8c98d77fd402",
+    measurementId: "G-NZBHC37BM7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Expose to global scope for non-module code
+  window._firebaseDB = db;
+  window._firebaseDoc = doc;
+  window._firebaseGetDoc = getDoc;
+  window._firebaseSetDoc = setDoc;
+  window._firebaseOnSnapshot = onSnapshot;
+  window._firebaseReady = true;
+
+  // Notify app that Firebase is ready
+  window.dispatchEvent(new Event('firebaseReady'));
+</script>
+
 <style>
 /* ======== RESET & BASE ======== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,796 +75,299 @@ html, body {
   overflow-x: hidden;
 }
 
-/* ======== SCROLLBAR ======== */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
-/* ======== LAYOUT ======== */
 #app { display: flex; height: 100vh; }
 
 /* ======== SIDEBAR ======== */
 #sidebar {
-  width: 240px;
-  min-width: 240px;
+  width: 240px; min-width: 240px;
   background: var(--bg-deep);
   border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
 }
-
 #sidebar::before {
-  content:'';
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
+  content:''; position: absolute; top:0; left:0; right:0; bottom:0;
   background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(200,0,26,.015) 40px, rgba(200,0,26,.015) 41px);
   pointer-events: none;
 }
-
-.brand {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.brand-logo {
-  font-family: var(--font-head);
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--accent2);
-  letter-spacing: 3px;
-  text-shadow: 0 0 20px rgba(255,43,71,.4);
-  line-height: 1;
-}
-
-.brand-sub {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-3);
-  letter-spacing: 2px;
-  margin-top: 4px;
-  text-transform: uppercase;
-}
-
-.brand-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.dot-live {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,100% { opacity:1; }
-  50% { opacity:.3; }
-}
-
-.status-text {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--green);
-  letter-spacing: 1px;
-}
-
+.brand { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); }
+.brand-logo { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--accent2); letter-spacing: 3px; text-shadow: 0 0 20px rgba(255,43,71,.4); line-height: 1; }
+.brand-sub { font-family: var(--font-mono); font-size: 9px; color: var(--text-3); letter-spacing: 2px; margin-top: 4px; text-transform: uppercase; }
+.brand-status { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+.dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+.dot-offline { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.status-text { font-family: var(--font-mono); font-size: 10px; color: var(--green); letter-spacing: 1px; }
+.status-text.offline { color: var(--amber); }
 nav { flex:1; padding: 12px 0; overflow-y: auto; }
-
-.nav-section {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-3);
-  letter-spacing: 3px;
-  padding: 12px 20px 4px;
-  text-transform: uppercase;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all .15s;
-  border-left: 3px solid transparent;
-  position: relative;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-2);
-  letter-spacing: .5px;
-}
-
-.nav-item:hover {
-  background: rgba(200,0,26,.07);
-  color: var(--text-1);
-  border-left-color: rgba(200,0,26,.4);
-}
-
-.nav-item.active {
-  background: rgba(200,0,26,.12);
-  color: var(--accent2);
-  border-left-color: var(--accent);
-}
-
+.nav-section { font-family: var(--font-mono); font-size: 9px; color: var(--text-3); letter-spacing: 3px; padding: 12px 20px 4px; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; cursor: pointer; transition: all .15s; border-left: 3px solid transparent; position: relative; font-weight: 600; font-size: 14px; color: var(--text-2); letter-spacing: .5px; }
+.nav-item:hover { background: rgba(200,0,26,.07); color: var(--text-1); border-left-color: rgba(200,0,26,.4); }
+.nav-item.active { background: rgba(200,0,26,.12); color: var(--accent2); border-left-color: var(--accent); }
 .nav-item .nav-icon { font-size: 16px; width: 18px; text-align: center; }
-
-.nav-badge {
-  margin-left: auto;
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  font-family: var(--font-mono);
-  padding: 1px 6px;
-  border-radius: 3px;
-  line-height: 1.6;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--border);
-}
-
-.admin-tag {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.admin-avatar {
-  width: 30px; height: 30px;
-  border-radius: 4px;
-  background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-head);
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-}
-
+.nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; line-height: 1.6; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+.admin-tag { display: flex; align-items: center; gap: 8px; }
+.admin-avatar { width: 30px; height: 30px; border-radius: 4px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 11px; font-weight: 700; color: #fff; }
 .admin-name { font-size: 13px; font-weight: 600; }
 .admin-role { font-size: 11px; color: var(--gold); font-family: var(--font-mono); }
 
-/* ======== MAIN CONTENT ======== */
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* ======== MAIN ======== */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { height: 52px; background: var(--bg-deep); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; }
+.page-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--text-2); letter-spacing: 2px; text-transform: uppercase; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.search-box { display: flex; align-items: center; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; gap: 6px; }
+.search-box input { background: transparent; border: none; outline: none; color: var(--text-1); font-family: var(--font-mono); font-size: 12px; width: 180px; padding: 6px 0; }
+.search-box input::placeholder { color: var(--text-3); }
+.time-display { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+#content { flex: 1; overflow-y: auto; padding: 24px; }
 
-.topbar {
-  height: 52px;
+/* ======== SYNC STATUS BAR ======== */
+#sync-bar {
   background: var(--bg-deep);
   border-bottom: 1px solid var(--border);
+  padding: 4px 24px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  gap: 16px;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
   flex-shrink: 0;
 }
-
-.page-title {
-  font-family: var(--font-head);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-2);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 10px;
-  gap: 6px;
-}
-
-.search-box input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-1);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  width: 180px;
-  padding: 6px 0;
-}
-
-.search-box input::placeholder { color: var(--text-3); }
-
-.time-display {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-3);
-}
-
-#content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-}
+#sync-bar.syncing { color: var(--amber); }
+#sync-bar.synced { color: var(--green); }
+#sync-bar.error { color: var(--red); }
+.sync-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
 /* ======== PANELS ======== */
 .panel { display: none; }
 .panel.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-@keyframes fadeIn {
-  from { opacity:0; transform: translateY(6px); }
-  to { opacity:1; transform: translateY(0); }
-}
-
-/* ======== STATS GRID ======== */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::after {
-  content: '';
-  position: absolute;
-  top:0; left:0; right:0;
-  height: 2px;
-}
-
+/* ======== STATS ======== */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 16px; position: relative; overflow: hidden; }
+.stat-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
 .stat-card.red::after { background: var(--accent); }
 .stat-card.gold::after { background: var(--gold); }
 .stat-card.green::after { background: var(--green); }
 .stat-card.blue::after { background: var(--blue); }
-
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-3);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.stat-value {
-  font-family: var(--font-head);
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--text-1);
-  line-height: 1;
-}
-
-.stat-sub {
-  font-size: 11px;
-  color: var(--text-3);
-  margin-top: 4px;
-}
-
-.stat-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 32px;
-  opacity: .06;
-}
+.stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-value { font-family: var(--font-head); font-size: 26px; font-weight: 700; color: var(--text-1); line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.stat-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: .06; }
 
 /* ======== SECTION HEADER ======== */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-family: var(--font-head);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-2);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-title::before {
-  content: '';
-  display: block;
-  width: 3px; height: 14px;
-  background: var(--accent);
-  border-radius: 1px;
-}
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-title { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--text-2); letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.section-title::before { content:''; display:block; width:3px; height:14px; background:var(--accent); border-radius:1px; }
 
 /* ======== BUTTONS ======== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 4px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .5px;
-  cursor: pointer;
-  transition: all .15s;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-2);
-  border-color: var(--border);
-}
-.btn-ghost:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-glow); }
-
-.btn-danger { background: rgba(239,68,68,.15); color: var(--red); border-color: rgba(239,68,68,.3); }
-.btn-danger:hover { background: rgba(239,68,68,.25); }
-
-.btn-success { background: rgba(34,197,94,.15); color: var(--green); border-color: rgba(34,197,94,.3); }
-.btn-success:hover { background: rgba(34,197,94,.25); }
-
-.btn-gold { background: rgba(212,168,67,.15); color: var(--gold); border-color: rgba(212,168,67,.3); }
-.btn-gold:hover { background: rgba(212,168,67,.25); }
-
-.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:4px; font-family:var(--font-main); font-size:13px; font-weight:600; letter-spacing:.5px; cursor:pointer; transition:all .15s; border:1px solid transparent; }
+.btn-primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+.btn-primary:hover { background:var(--accent2); border-color:var(--accent2); }
+.btn-ghost { background:transparent; color:var(--text-2); border-color:var(--border); }
+.btn-ghost:hover { background:var(--bg-hover); color:var(--text-1); border-color:var(--border-glow); }
+.btn-danger { background:rgba(239,68,68,.15); color:var(--red); border-color:rgba(239,68,68,.3); }
+.btn-danger:hover { background:rgba(239,68,68,.25); }
+.btn-success { background:rgba(34,197,94,.15); color:var(--green); border-color:rgba(34,197,94,.3); }
+.btn-success:hover { background:rgba(34,197,94,.25); }
+.btn-gold { background:rgba(212,168,67,.15); color:var(--gold); border-color:rgba(212,168,67,.3); }
+.btn-gold:hover { background:rgba(212,168,67,.25); }
+.btn-sm { padding:4px 10px; font-size:12px; }
+.btn-amber { background:rgba(245,158,11,.15); color:var(--amber); border-color:rgba(245,158,11,.3); }
+.btn-amber:hover { background:rgba(245,158,11,.25); }
 
 /* ======== TABLE ======== */
-.table-wrap {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead tr {
-  background: rgba(200,0,26,.08);
-  border-bottom: 1px solid var(--border);
-}
-
-th {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-3);
-  padding: 10px 14px;
-  text-align: left;
-  font-weight: 400;
-}
-
-td {
-  padding: 11px 14px;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(30,45,71,.5);
-  vertical-align: middle;
-}
-
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: var(--bg-hover); }
+.table-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+table { width:100%; border-collapse:collapse; }
+thead tr { background:rgba(200,0,26,.08); border-bottom:1px solid var(--border); }
+th { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-3); padding:10px 14px; text-align:left; font-weight:400; }
+td { padding:11px 14px; font-size:13px; border-bottom:1px solid rgba(30,45,71,.5); vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:var(--bg-hover); }
 
 /* ======== BADGES ======== */
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1px;
-  font-weight: 400;
-}
-
-.badge-lider    { background: rgba(212,168,67,.2); color: var(--gold); border:1px solid rgba(212,168,67,.4); }
-.badge-sub      { background: rgba(200,0,26,.2); color: var(--accent2); border:1px solid rgba(200,0,26,.4); }
-.badge-capitan  { background: rgba(59,130,246,.2); color: var(--blue); border:1px solid rgba(59,130,246,.4); }
-.badge-soldado  { background: rgba(34,197,94,.15); color: var(--green); border:1px solid rgba(34,197,94,.3); }
-.badge-recluta  { background: rgba(74,85,104,.3); color: var(--text-2); border:1px solid var(--border); }
-
-.badge-comun     { background: rgba(74,85,104,.3); color: var(--text-2); border:1px solid var(--border); }
-.badge-raro      { background: rgba(59,130,246,.2); color: var(--blue); border:1px solid rgba(59,130,246,.4); }
-.badge-epico     { background: rgba(139,92,246,.2); color: #a78bfa; border:1px solid rgba(139,92,246,.4); }
-.badge-legendario{ background: rgba(212,168,67,.2); color: var(--gold); border:1px solid rgba(212,168,67,.4); }
-
-.badge-activo   { background: rgba(34,197,94,.15); color: var(--green); border:1px solid rgba(34,197,94,.3); }
-.badge-inactivo { background: rgba(239,68,68,.15); color: var(--red); border:1px solid rgba(239,68,68,.3); }
-
-.badge-ingreso  { background: rgba(34,197,94,.12); color: var(--green); border:1px solid rgba(34,197,94,.2); }
-.badge-egreso   { background: rgba(239,68,68,.12); color: var(--red); border:1px solid rgba(239,68,68,.2); }
-.badge-pago     { background: rgba(59,130,246,.12); color: var(--blue); border:1px solid rgba(59,130,246,.2); }
+.badge { display:inline-block; padding:2px 8px; border-radius:3px; font-family:var(--font-mono); font-size:10px; letter-spacing:1px; font-weight:400; }
+.badge-lider    { background:rgba(212,168,67,.2); color:var(--gold); border:1px solid rgba(212,168,67,.4); }
+.badge-sub      { background:rgba(200,0,26,.2); color:var(--accent2); border:1px solid rgba(200,0,26,.4); }
+.badge-capitan  { background:rgba(59,130,246,.2); color:var(--blue); border:1px solid rgba(59,130,246,.4); }
+.badge-soldado  { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
+.badge-recluta  { background:rgba(74,85,104,.3); color:var(--text-2); border:1px solid var(--border); }
+.badge-comun     { background:rgba(74,85,104,.3); color:var(--text-2); border:1px solid var(--border); }
+.badge-raro      { background:rgba(59,130,246,.2); color:var(--blue); border:1px solid rgba(59,130,246,.4); }
+.badge-epico     { background:rgba(139,92,246,.2); color:#a78bfa; border:1px solid rgba(139,92,246,.4); }
+.badge-legendario{ background:rgba(212,168,67,.2); color:var(--gold); border:1px solid rgba(212,168,67,.4); }
+.badge-activo   { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
+.badge-inactivo { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+.badge-ingreso  { background:rgba(34,197,94,.12); color:var(--green); border:1px solid rgba(34,197,94,.2); }
+.badge-egreso   { background:rgba(239,68,68,.12); color:var(--red); border:1px solid rgba(239,68,68,.2); }
+.badge-pago     { background:rgba(59,130,246,.12); color:var(--blue); border:1px solid rgba(59,130,246,.2); }
 
 /* ======== MODAL ======== */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.75);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-top: 2px solid var(--accent);
-  border-radius: 8px;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,.6);
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--border);
-}
-
-.modal-title {
-  font-family: var(--font-head);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--accent2);
-}
-
-.modal-close {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text-2);
-  cursor: pointer;
-  font-size: 16px;
-  transition: all .15s;
-}
-.modal-close:hover { border-color: var(--accent); color: var(--accent2); }
-
-.modal-body { padding: 22px; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:1000; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-top:2px solid var(--accent); border-radius:8px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border); }
+.modal-title { font-family:var(--font-head); font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); }
+.modal-close { width:28px; height:28px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:4px; color:var(--text-2); cursor:pointer; font-size:16px; transition:all .15s; }
+.modal-close:hover { border-color:var(--accent); color:var(--accent2); }
+.modal-body { padding:22px; }
 
 /* ======== FORM ======== */
-.form-row {
-  margin-bottom: 16px;
-}
-
-.form-row label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text-3);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.form-row input,
-.form-row select,
-.form-row textarea {
-  width: 100%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text-1);
-  font-family: var(--font-main);
-  font-size: 14px;
-  padding: 9px 12px;
-  outline: none;
-  transition: border-color .15s;
-}
-
-.form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(200,0,26,.1);
-}
-
-.form-row select { cursor: pointer; }
-.form-row select option { background: var(--bg-card); }
-
-.form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-/* ======== GRID 2-col ======== */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.form-row { margin-bottom:16px; }
+.form-row label { display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:2px; color:var(--text-3); text-transform:uppercase; margin-bottom:6px; }
+.form-row input,.form-row select,.form-row textarea { width:100%; background:var(--bg-surface); border:1px solid var(--border); border-radius:4px; color:var(--text-1); font-family:var(--font-main); font-size:14px; padding:9px 12px; outline:none; transition:border-color .15s; }
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(200,0,26,.1); }
+.form-row select { cursor:pointer; }
+.form-row select option { background:var(--bg-card); }
+.form-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 
 /* ======== LOG FEED ======== */
-.log-feed {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.log-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 9px 14px;
-  border-bottom: 1px solid rgba(30,45,71,.5);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.log-item:last-child { border-bottom: none; }
-.log-item:hover { background: var(--bg-hover); }
-
-.log-time { color: var(--text-3); flex-shrink: 0; }
-.log-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-.log-dot.red { background: var(--accent); }
-.log-dot.green { background: var(--green); }
-.log-dot.blue { background: var(--blue); }
-.log-dot.gold { background: var(--gold); }
-.log-msg { color: var(--text-2); }
-.log-msg strong { color: var(--text-1); }
-
-/* ======== WEAPON TYPE ICONS ======== */
-.weapon-type-icon {
-  display: inline-block;
-  width: 24px; height: 24px;
-  line-height: 24px;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 13px;
-}
+.log-feed { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; overflow:hidden; max-height:280px; overflow-y:auto; }
+.log-item { display:flex; align-items:flex-start; gap:10px; padding:9px 14px; border-bottom:1px solid rgba(30,45,71,.5); font-family:var(--font-mono); font-size:11px; line-height:1.5; }
+.log-item:last-child { border-bottom:none; }
+.log-item:hover { background:var(--bg-hover); }
+.log-time { color:var(--text-3); flex-shrink:0; }
+.log-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.log-dot.red { background:var(--accent); }
+.log-dot.green { background:var(--green); }
+.log-dot.blue { background:var(--blue); }
+.log-dot.gold { background:var(--gold); }
+.log-msg { color:var(--text-2); }
+.log-msg strong { color:var(--text-1); }
 
 /* ======== MEMBER AVATAR ======== */
-.member-avatar {
-  width: 32px; height: 32px;
-  border-radius: 4px;
-  background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-head);
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.member-cell { display: flex; align-items: center; gap: 10px; }
-.member-name { font-weight: 600; font-size: 13px; }
-.member-id { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); }
-
-/* ======== PROGRESS BAR ======== */
-.progress-bar {
-  height: 4px;
-  background: var(--bg-surface);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 6px;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width .4s ease;
-}
+.member-avatar { width:32px; height:32px; border-radius:4px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+.member-cell { display:flex; align-items:center; gap:10px; }
+.member-name { font-weight:600; font-size:13px; }
+.member-id { font-family:var(--font-mono); font-size:10px; color:var(--text-3); }
 
 /* ======== TOAST ======== */
-#toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--green);
-  border-radius: 6px;
-  padding: 12px 18px;
-  font-size: 13px;
-  color: var(--text-1);
-  display: none;
-  z-index: 9999;
-  animation: slideUp .2s ease;
-  max-width: 300px;
-  font-family: var(--font-mono);
-}
+#toast { position:fixed; bottom:24px; right:24px; background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:6px; padding:12px 18px; font-size:13px; color:var(--text-1); display:none; z-index:9999; animation:slideUp .2s ease; max-width:300px; font-family:var(--font-mono); }
+@keyframes slideUp { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-@keyframes slideUp {
-  from { transform: translateY(10px); opacity:0; }
-  to { transform: translateY(0); opacity:1; }
-}
+/* ======== ECONOMY ======== */
+.economy-card { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:20px; }
+.economy-total { font-family:var(--font-head); font-size:38px; font-weight:900; color:var(--gold); line-height:1; text-shadow:0 0 20px rgba(212,168,67,.2); }
+.economy-label { font-family:var(--font-mono); font-size:10px; color:var(--text-3); letter-spacing:3px; text-transform:uppercase; margin-bottom:6px; }
+mark { background:rgba(200,0,26,.3); color:var(--accent2); border-radius:2px; padding:0 2px; }
+.action-group { display:flex; gap:6px; align-items:center; }
+.damage-bar { display:flex; align-items:center; gap:8px; }
+.damage-val { font-family:var(--font-mono); font-size:11px; width:28px; text-align:right; color:var(--text-2); }
+.empty-state { text-align:center; padding:40px; color:var(--text-3); font-family:var(--font-mono); font-size:12px; letter-spacing:1px; }
 
-/* ======== LOGIN ======== */
+/* ======== LOGIN SCREEN ======== */
 #login-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg-void);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9998;
   flex-direction: column;
-  gap: 0;
+  /* Background image with dark overlay */
+  background-image:
+    linear-gradient(135deg, rgba(8,10,15,0.82) 0%, rgba(200,0,26,0.18) 50%, rgba(8,10,15,0.90) 100%),
+    url('https://i.imgur.com/placeholder.png'); /* will be replaced by JS with the uploaded image data */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Scanline effect on login */
+#login-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Red vignette corners */
+#login-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(200,0,26,0.25) 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .login-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+  background: rgba(13,17,23,0.88);
+  border: 1px solid rgba(200,0,26,0.4);
   border-top: 2px solid var(--accent);
   border-radius: 10px;
   padding: 36px 40px;
-  width: 380px;
-  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  width: 400px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 60px rgba(200,0,26,0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.login-logo {
-  text-align: center;
-  margin-bottom: 28px;
+.login-logo { text-align:center; margin-bottom:28px; }
+.login-logo .main-logo { font-family:var(--font-head); font-size:42px; font-weight:900; color:var(--accent2); text-shadow:0 0 40px rgba(255,43,71,.7), 0 0 80px rgba(255,43,71,.3); letter-spacing:8px; display:block; animation: glowPulse 3s infinite; }
+@keyframes glowPulse {
+  0%,100% { text-shadow: 0 0 40px rgba(255,43,71,.7), 0 0 80px rgba(255,43,71,.3); }
+  50% { text-shadow: 0 0 60px rgba(255,43,71,.9), 0 0 120px rgba(255,43,71,.5); }
 }
+.login-logo .sub-logo { font-family:var(--font-mono); font-size:9px; color:var(--text-3); letter-spacing:4px; text-transform:uppercase; margin-top:6px; display:block; }
+.login-logo .sub-logo2 { font-family:var(--font-mono); font-size:8px; color:rgba(200,0,26,0.5); letter-spacing:3px; text-transform:uppercase; margin-top:3px; display:block; }
+.login-box .form-row label { color:var(--text-3); }
+.login-error { color:var(--accent2); font-family:var(--font-mono); font-size:11px; text-align:center; margin-top:10px; min-height:16px; }
+.login-divider { border:none; border-top:1px solid var(--border); margin:16px 0; }
 
-.login-logo .main-logo {
-  font-family: var(--font-head);
-  font-size: 36px;
-  font-weight: 900;
-  color: var(--accent2);
-  text-shadow: 0 0 30px rgba(255,43,71,.5);
-  letter-spacing: 6px;
-  display: block;
-}
-
-.login-logo .sub-logo {
+/* Login bg image upload helper */
+.login-bg-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-3);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  margin-top: 4px;
-  display: block;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 2px;
+  white-space: nowrap;
 }
 
-.login-box .form-row label { color: var(--text-3); }
-
-.login-error {
-  color: var(--accent2);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-align: center;
-  margin-top: 10px;
-  min-height: 16px;
-}
-
-/* ======== EMPTY STATE ======== */
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-3);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
-/* ======== INLINE ACTIONS ======== */
-.action-group { display: flex; gap: 6px; align-items: center; }
-
-/* ======== ECONOMY PANELS ======== */
-.economy-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 20px;
-}
-
-.economy-total {
-  font-family: var(--font-head);
-  font-size: 38px;
-  font-weight: 900;
-  color: var(--gold);
-  line-height: 1;
-  text-shadow: 0 0 20px rgba(212,168,67,.2);
-}
-
-.economy-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-3);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-/* ======== SEARCH HIGHLIGHT ======== */
-mark {
-  background: rgba(200,0,26,.3);
-  color: var(--accent2);
-  border-radius: 2px;
-  padding: 0 2px;
-}
-
-/* ======== SCAN LINE EFFECT ======== */
+/* ======== SCAN LINE (global) ======== */
 body::after {
-  content: '';
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.015) 2px, rgba(0,0,0,.015) 4px);
-  pointer-events: none;
-  z-index: 9999;
+  content:''; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.015) 2px,rgba(0,0,0,.015) 4px);
+  pointer-events:none; z-index:9999;
 }
 
-/* ======== WEAPON STATS ======== */
-.damage-bar { display: flex; align-items: center; gap: 8px; }
-.damage-val { font-family: var(--font-mono); font-size: 11px; width: 28px; text-align: right; color: var(--text-2); }
-
-/* ======== CHARTS ======== */
-.mini-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 50px;
-}
-
-.mini-bar {
-  flex: 1;
-  background: rgba(200,0,26,.4);
-  border-radius: 2px 2px 0 0;
-  transition: background .15s;
-}
-
-.mini-bar:hover { background: var(--accent); }
-
-/* ======== RESPONSIVE ======== */
-@media (max-width: 900px) {
-  #sidebar { width: 60px; min-width: 60px; }
-  .brand-sub, .brand-status, .nav-section, .nav-item span, .nav-badge, .admin-name, .admin-role { display: none; }
-  .brand-logo { font-size: 14px; letter-spacing: 1px; }
-  .nav-item { justify-content: center; padding: 12px; }
-  .nav-item .nav-icon { font-size: 20px; }
+@media (max-width:900px) {
+  #sidebar { width:60px; min-width:60px; }
+  .brand-sub,.brand-status,.nav-section,.nav-item span,.nav-badge,.admin-name,.admin-role { display:none; }
+  .brand-logo { font-size:14px; letter-spacing:1px; }
+  .nav-item { justify-content:center; padding:12px; }
+  .nav-item .nav-icon { font-size:20px; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
       <span class="main-logo">CCNG</span>
       <span class="sub-logo">Comando Criminal Nueva Generación</span>
+      <span class="sub-logo2">Sistema de Administración v2.5</span>
     </div>
     <div class="form-row">
       <label>Usuario</label>
@@ -843,95 +377,82 @@ body::after {
       <label>Contraseña</label>
       <input type="password" id="login-pass" placeholder="••••••••">
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;" onclick="doLogin()">🔐 ACCEDER AL SISTEMA</button>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;margin-top:4px;" onclick="doLogin()">🔐 ACCEDER AL SISTEMA</button>
     <div class="login-error" id="login-error"></div>
-    <div style="margin-top:12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text-3);">
-      Demo: admin / ccng2024
+    <hr class="login-divider">
+    <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text-3);">
+      ACCESO RESTRINGIDO — SOLO PERSONAL AUTORIZADO
     </div>
   </div>
+  <div class="login-bg-hint">CCNG ADMIN SYSTEM v2.5 — FIREBASE SYNC ENABLED</div>
 </div>
 
-<!-- MAIN APP -->
+<!-- ===== MAIN APP ===== -->
 <div id="app" style="display:none;">
-
-  <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="brand">
       <div class="brand-logo">CCNG</div>
-      <div class="brand-sub">Sistema Admin v2.4</div>
+      <div class="brand-sub">Sistema Admin v2.5</div>
       <div class="brand-status">
-        <div class="dot-live"></div>
-        <span class="status-text">SISTEMA ONLINE</span>
+        <div class="dot-live" id="conn-dot"></div>
+        <span class="status-text" id="conn-text">CONECTANDO...</span>
       </div>
     </div>
-
     <nav>
       <div class="nav-section">Principal</div>
       <div class="nav-item active" onclick="showPanel('dashboard',this)">
-        <span class="nav-icon">⬛</span>
-        <span>Dashboard</span>
+        <span class="nav-icon">⬛</span><span>Dashboard</span>
       </div>
-
       <div class="nav-section">Organización</div>
       <div class="nav-item" onclick="showPanel('miembros',this)">
-        <span class="nav-icon">👤</span>
-        <span>Miembros</span>
+        <span class="nav-icon">👤</span><span>Miembros</span>
         <span class="nav-badge" id="badge-miembros">0</span>
       </div>
       <div class="nav-item" onclick="showPanel('rangos',this)">
-        <span class="nav-icon">🎖</span>
-        <span>Jerarquía</span>
+        <span class="nav-icon">🎖</span><span>Jerarquía</span>
       </div>
-
       <div class="nav-section">Economía</div>
       <div class="nav-item" onclick="showPanel('caja',this)">
-        <span class="nav-icon">💰</span>
-        <span>Caja Central</span>
+        <span class="nav-icon">💰</span><span>Caja Central</span>
       </div>
       <div class="nav-item" onclick="showPanel('pagos',this)">
-        <span class="nav-icon">💳</span>
-        <span>Pagos</span>
+        <span class="nav-icon">💳</span><span>Pagos</span>
         <span class="nav-badge" id="badge-pagos">0</span>
       </div>
       <div class="nav-item" onclick="showPanel('ganancias',this)">
-        <span class="nav-icon">📈</span>
-        <span>Ganancias</span>
+        <span class="nav-icon">📈</span><span>Ganancias</span>
       </div>
-
       <div class="nav-section">Arsenal</div>
       <div class="nav-item" onclick="showPanel('armas',this)">
-        <span class="nav-icon">🔫</span>
-        <span>Armamento</span>
+        <span class="nav-icon">🔫</span><span>Armamento</span>
         <span class="nav-badge" id="badge-armas">0</span>
       </div>
       <div class="nav-item" onclick="showPanel('asignaciones',this)">
-        <span class="nav-icon">📋</span>
-        <span>Asignaciones</span>
+        <span class="nav-icon">📋</span><span>Asignaciones</span>
       </div>
-
       <div class="nav-section">Sistema</div>
       <div class="nav-item" onclick="showPanel('historial',this)">
-        <span class="nav-icon">📜</span>
-        <span>Historial</span>
+        <span class="nav-icon">📜</span><span>Historial</span>
       </div>
-      <div class="nav-item" onclick="exportarTodo()">
-        <span class="nav-icon">💾</span>
-        <span>Exportar .txt</span>
+      <div class="nav-item" onclick="exportarJSON()">
+        <span class="nav-icon">💾</span><span>Exportar Backup</span>
       </div>
+      <div class="nav-item" onclick="document.getElementById('import-file').click()">
+        <span class="nav-icon">📂</span><span>Importar Backup</span>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarJSON(event)">
     </nav>
-
     <div class="sidebar-footer">
       <div class="admin-tag">
         <div class="admin-avatar">AD</div>
         <div>
-          <div class="admin-name">Admin</div>
+          <div class="admin-name" id="admin-display-name">Admin</div>
           <div class="admin-role">LÍDER</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div id="main">
     <div class="topbar">
       <div class="page-title" id="page-title">Dashboard</div>
@@ -945,30 +466,29 @@ body::after {
       </div>
     </div>
 
+    <!-- Sync status bar -->
+    <div id="sync-bar">
+      <div class="sync-dot"></div>
+      <span id="sync-text">Iniciando sincronización con Firebase...</span>
+      <span style="margin-left:auto;opacity:.5" id="sync-time"></span>
+    </div>
+
     <div id="content">
 
-      <!-- ===== DASHBOARD ===== -->
+      <!-- DASHBOARD -->
       <div class="panel active" id="panel-dashboard">
         <div class="stats-grid" id="dash-stats"></div>
-
         <div class="grid-2" style="gap:20px;margin-bottom:20px;">
           <div>
-            <div class="section-header">
-              <div class="section-title">Últimas transacciones</div>
-            </div>
+            <div class="section-header"><div class="section-title">Últimas transacciones</div></div>
             <div class="log-feed" id="dash-trans"></div>
           </div>
           <div>
-            <div class="section-header">
-              <div class="section-title">Log del sistema</div>
-            </div>
+            <div class="section-header"><div class="section-title">Log del sistema</div></div>
             <div class="log-feed" id="dash-log"></div>
           </div>
         </div>
-
-        <div class="section-header">
-          <div class="section-title">Miembros recientes</div>
-        </div>
+        <div class="section-header"><div class="section-title">Miembros recientes</div></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Miembro</th><th>Rango</th><th>Estado</th><th>Balance</th></tr></thead>
@@ -977,7 +497,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== MIEMBROS ===== -->
+      <!-- MIEMBROS -->
       <div class="panel" id="panel-miembros">
         <div class="section-header">
           <div class="section-title">Gestión de Miembros</div>
@@ -985,23 +505,19 @@ body::after {
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr>
-              <th>Miembro</th><th>Rango</th><th>Estado</th><th>Balance</th><th>Armas</th><th>Ingreso</th><th>Acciones</th>
-            </tr></thead>
+            <thead><tr><th>Miembro</th><th>Rango</th><th>Estado</th><th>Balance</th><th>Armas</th><th>Ingreso</th><th>Acciones</th></tr></thead>
             <tbody id="tabla-miembros"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- ===== RANGOS ===== -->
+      <!-- RANGOS -->
       <div class="panel" id="panel-rangos">
-        <div class="section-header">
-          <div class="section-title">Jerarquía de la Organización</div>
-        </div>
+        <div class="section-header"><div class="section-title">Jerarquía de la Organización</div></div>
         <div id="rangos-content"></div>
       </div>
 
-      <!-- ===== CAJA ===== -->
+      <!-- CAJA -->
       <div class="panel" id="panel-caja">
         <div class="grid-2" style="gap:20px;margin-bottom:20px;">
           <div class="economy-card">
@@ -1016,10 +532,7 @@ body::after {
             <div class="economy-label">Registrar Movimiento</div>
             <div class="form-row" style="margin-bottom:10px;">
               <label>Tipo</label>
-              <select id="mov-tipo">
-                <option value="ingreso">Ingreso</option>
-                <option value="egreso">Egreso</option>
-              </select>
+              <select id="mov-tipo"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select>
             </div>
             <div class="form-row" style="margin-bottom:10px;">
               <label>Monto ($)</label>
@@ -1032,10 +545,7 @@ body::after {
             <button class="btn btn-primary btn-sm" onclick="registrarMovimiento()">+ Registrar</button>
           </div>
         </div>
-
-        <div class="section-header">
-          <div class="section-title">Historial de Caja</div>
-        </div>
+        <div class="section-header"><div class="section-title">Historial de Caja</div></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Descripción</th><th>Balance</th></tr></thead>
@@ -1044,7 +554,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== PAGOS ===== -->
+      <!-- PAGOS -->
       <div class="panel" id="panel-pagos">
         <div class="section-header">
           <div class="section-title">Registro de Pagos</div>
@@ -1058,7 +568,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== GANANCIAS ===== -->
+      <!-- GANANCIAS -->
       <div class="panel" id="panel-ganancias">
         <div class="section-header">
           <div class="section-title">Ganancias por Actividad</div>
@@ -1073,7 +583,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== ARMAS ===== -->
+      <!-- ARMAS -->
       <div class="panel" id="panel-armas">
         <div class="section-header">
           <div class="section-title">Inventario de Armamento</div>
@@ -1098,7 +608,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== ASIGNACIONES ===== -->
+      <!-- ASIGNACIONES -->
       <div class="panel" id="panel-asignaciones">
         <div class="section-header">
           <div class="section-title">Asignación de Armas</div>
@@ -1112,7 +622,7 @@ body::after {
         </div>
       </div>
 
-      <!-- ===== HISTORIAL ===== -->
+      <!-- HISTORIAL -->
       <div class="panel" id="panel-historial">
         <div class="section-header">
           <div class="section-title">Historial de Actividades</div>
@@ -1121,13 +631,11 @@ body::after {
         <div id="historial-feed"></div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
+    </div>
+  </div>
+</div>
 
-<!-- ===== MODALES ===== -->
-
-<!-- Modal Miembro -->
+<!-- MODALES -->
 <div class="modal-overlay" id="modal-miembro">
   <div class="modal">
     <div class="modal-header">
@@ -1137,38 +645,22 @@ body::after {
     <div class="modal-body">
       <input type="hidden" id="miembro-edit-id">
       <div class="grid-2">
-        <div class="form-row">
-          <label>Nombre / Alias</label>
-          <input type="text" id="m-nombre" placeholder="Ej: El Capi">
-        </div>
-        <div class="form-row">
-          <label>Rango</label>
+        <div class="form-row"><label>Nombre / Alias</label><input type="text" id="m-nombre" placeholder="Ej: El Capi"></div>
+        <div class="form-row"><label>Rango</label>
           <select id="m-rango">
-            <option value="Lider">Líder</option>
-            <option value="Sub">Sub-Líder</option>
-            <option value="Capitan">Capitán</option>
-            <option value="Soldado" selected>Soldado</option>
+            <option value="Lider">Líder</option><option value="Sub">Sub-Líder</option>
+            <option value="Capitan">Capitán</option><option value="Soldado" selected>Soldado</option>
             <option value="Recluta">Recluta</option>
           </select>
         </div>
       </div>
       <div class="grid-2">
-        <div class="form-row">
-          <label>Balance ($)</label>
-          <input type="number" id="m-dinero" placeholder="0" value="0">
-        </div>
-        <div class="form-row">
-          <label>Estado</label>
-          <select id="m-estado">
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
-          </select>
+        <div class="form-row"><label>Balance ($)</label><input type="number" id="m-dinero" placeholder="0" value="0"></div>
+        <div class="form-row"><label>Estado</label>
+          <select id="m-estado"><option value="activo">Activo</option><option value="inactivo">Inactivo</option></select>
         </div>
       </div>
-      <div class="form-row">
-        <label>Notas</label>
-        <textarea id="m-notas" rows="2" placeholder="Información adicional..."></textarea>
-      </div>
+      <div class="form-row"><label>Notas</label><textarea id="m-notas" rows="2" placeholder="Información adicional..."></textarea></div>
       <div class="form-actions">
         <button class="btn btn-ghost" onclick="cerrarModal('modal-miembro')">Cancelar</button>
         <button class="btn btn-primary" onclick="guardarMiembro()">💾 Guardar</button>
@@ -1177,7 +669,6 @@ body::after {
   </div>
 </div>
 
-<!-- Modal Pago -->
 <div class="modal-overlay" id="modal-pago">
   <div class="modal">
     <div class="modal-header">
@@ -1186,26 +677,13 @@ body::after {
     </div>
     <div class="modal-body">
       <div class="grid-2">
-        <div class="form-row">
-          <label>Miembro</label>
-          <select id="p-miembro"></select>
-        </div>
-        <div class="form-row">
-          <label>Monto ($)</label>
-          <input type="number" id="p-monto" placeholder="0">
-        </div>
+        <div class="form-row"><label>Miembro</label><select id="p-miembro"></select></div>
+        <div class="form-row"><label>Monto ($)</label><input type="number" id="p-monto" placeholder="0"></div>
       </div>
       <div class="grid-2">
-        <div class="form-row">
-          <label>Concepto</label>
-          <input type="text" id="p-concepto" placeholder="Ej: Cuota semanal">
-        </div>
-        <div class="form-row">
-          <label>Estado</label>
-          <select id="p-estado">
-            <option value="pagado">Pagado</option>
-            <option value="pendiente">Pendiente</option>
-          </select>
+        <div class="form-row"><label>Concepto</label><input type="text" id="p-concepto" placeholder="Ej: Cuota semanal"></div>
+        <div class="form-row"><label>Estado</label>
+          <select id="p-estado"><option value="pagado">Pagado</option><option value="pendiente">Pendiente</option></select>
         </div>
       </div>
       <div class="form-actions">
@@ -1216,7 +694,6 @@ body::after {
   </div>
 </div>
 
-<!-- Modal Ganancia -->
 <div class="modal-overlay" id="modal-ganancia">
   <div class="modal">
     <div class="modal-header">
@@ -1225,36 +702,20 @@ body::after {
     </div>
     <div class="modal-body">
       <div class="grid-2">
-        <div class="form-row">
-          <label>Nombre de actividad</label>
-          <input type="text" id="g-nombre" placeholder="Ej: Asalto banco norte">
-        </div>
-        <div class="form-row">
-          <label>Tipo</label>
+        <div class="form-row"><label>Nombre de actividad</label><input type="text" id="g-nombre" placeholder="Ej: Asalto banco norte"></div>
+        <div class="form-row"><label>Tipo</label>
           <select id="g-tipo">
-            <option value="robo">Robo</option>
-            <option value="mision">Misión RP</option>
-            <option value="evento">Evento</option>
-            <option value="extorsion">Extorsión</option>
-            <option value="contrato">Contrato</option>
-            <option value="otro">Otro</option>
+            <option value="robo">Robo</option><option value="mision">Misión RP</option>
+            <option value="evento">Evento</option><option value="extorsion">Extorsión</option>
+            <option value="contrato">Contrato</option><option value="otro">Otro</option>
           </select>
         </div>
       </div>
       <div class="grid-2">
-        <div class="form-row">
-          <label>Ganancia ($)</label>
-          <input type="number" id="g-monto" placeholder="0">
-        </div>
-        <div class="form-row">
-          <label>Participantes</label>
-          <input type="text" id="g-participantes" placeholder="Ej: Capi, Shadow, Lobo">
-        </div>
+        <div class="form-row"><label>Ganancia ($)</label><input type="number" id="g-monto" placeholder="0"></div>
+        <div class="form-row"><label>Participantes</label><input type="text" id="g-participantes" placeholder="Ej: Capi, Shadow, Lobo"></div>
       </div>
-      <div class="form-row">
-        <label>Descripción</label>
-        <textarea id="g-desc" rows="2" placeholder="Detalles de la actividad..."></textarea>
-      </div>
+      <div class="form-row"><label>Descripción</label><textarea id="g-desc" rows="2" placeholder="Detalles de la actividad..."></textarea></div>
       <div class="form-actions">
         <button class="btn btn-ghost" onclick="cerrarModal('modal-ganancia')">Cancelar</button>
         <button class="btn btn-primary" onclick="guardarGanancia()">💾 Guardar</button>
@@ -1263,7 +724,6 @@ body::after {
   </div>
 </div>
 
-<!-- Modal Arma -->
 <div class="modal-overlay" id="modal-arma">
   <div class="modal">
     <div class="modal-header">
@@ -1273,45 +733,26 @@ body::after {
     <div class="modal-body">
       <input type="hidden" id="arma-edit-id">
       <div class="grid-2">
-        <div class="form-row">
-          <label>Nombre del arma</label>
-          <input type="text" id="a-nombre" placeholder="Ej: AK-47">
-        </div>
-        <div class="form-row">
-          <label>Tipo</label>
+        <div class="form-row"><label>Nombre del arma</label><input type="text" id="a-nombre" placeholder="Ej: AK-47"></div>
+        <div class="form-row"><label>Tipo</label>
           <select id="a-tipo">
-            <option value="pistola">Pistola</option>
-            <option value="rifle">Rifle</option>
-            <option value="smg">SMG</option>
-            <option value="sniper">Sniper</option>
-            <option value="escopeta">Escopeta</option>
-            <option value="melee">Melee</option>
+            <option value="pistola">Pistola</option><option value="rifle">Rifle</option>
+            <option value="smg">SMG</option><option value="sniper">Sniper</option>
+            <option value="escopeta">Escopeta</option><option value="melee">Melee</option>
           </select>
         </div>
       </div>
       <div class="grid-3">
-        <div class="form-row">
-          <label>Daño (1-200)</label>
-          <input type="number" id="a-dano" placeholder="75" min="1" max="200">
-        </div>
-        <div class="form-row">
-          <label>Rareza</label>
+        <div class="form-row"><label>Daño (1-200)</label><input type="number" id="a-dano" placeholder="75" min="1" max="200"></div>
+        <div class="form-row"><label>Rareza</label>
           <select id="a-rareza">
-            <option value="comun">Común</option>
-            <option value="raro">Raro</option>
-            <option value="epico">Épico</option>
-            <option value="legendario">Legendario</option>
+            <option value="comun">Común</option><option value="raro">Raro</option>
+            <option value="epico">Épico</option><option value="legendario">Legendario</option>
           </select>
         </div>
-        <div class="form-row">
-          <label>Cantidad</label>
-          <input type="number" id="a-cantidad" placeholder="1" min="1">
-        </div>
+        <div class="form-row"><label>Cantidad</label><input type="number" id="a-cantidad" placeholder="1" min="1"></div>
       </div>
-      <div class="form-row">
-        <label>Notas</label>
-        <textarea id="a-notas" rows="2" placeholder="Descripción del arma, modificaciones, etc."></textarea>
-      </div>
+      <div class="form-row"><label>Notas</label><textarea id="a-notas" rows="2" placeholder="Descripción del arma, modificaciones, etc."></textarea></div>
       <div class="form-actions">
         <button class="btn btn-ghost" onclick="cerrarModal('modal-arma')">Cancelar</button>
         <button class="btn btn-primary" onclick="guardarArma()">💾 Guardar</button>
@@ -1320,7 +761,6 @@ body::after {
   </div>
 </div>
 
-<!-- Modal Asignación -->
 <div class="modal-overlay" id="modal-asignacion">
   <div class="modal">
     <div class="modal-header">
@@ -1329,32 +769,16 @@ body::after {
     </div>
     <div class="modal-body">
       <div class="grid-2">
-        <div class="form-row">
-          <label>Miembro</label>
-          <select id="as-miembro"></select>
-        </div>
-        <div class="form-row">
-          <label>Arma</label>
-          <select id="as-arma"></select>
-        </div>
+        <div class="form-row"><label>Miembro</label><select id="as-miembro"></select></div>
+        <div class="form-row"><label>Arma</label><select id="as-arma"></select></div>
       </div>
       <div class="grid-2">
-        <div class="form-row">
-          <label>Acción</label>
-          <select id="as-accion">
-            <option value="asignar">Asignar</option>
-            <option value="retirar">Retirar</option>
-          </select>
+        <div class="form-row"><label>Acción</label>
+          <select id="as-accion"><option value="asignar">Asignar</option><option value="retirar">Retirar</option></select>
         </div>
-        <div class="form-row">
-          <label>Cantidad</label>
-          <input type="number" id="as-cantidad" value="1" min="1">
-        </div>
+        <div class="form-row"><label>Cantidad</label><input type="number" id="as-cantidad" value="1" min="1"></div>
       </div>
-      <div class="form-row">
-        <label>Notas</label>
-        <input type="text" id="as-notas" placeholder="Ej: Para misión norte">
-      </div>
+      <div class="form-row"><label>Notas</label><input type="text" id="as-notas" placeholder="Ej: Para misión norte"></div>
       <div class="form-actions">
         <button class="btn btn-ghost" onclick="cerrarModal('modal-asignacion')">Cancelar</button>
         <button class="btn btn-primary" onclick="guardarAsignacion()">💾 Confirmar</button>
@@ -1363,60 +787,41 @@ body::after {
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
-/* =============================================
-   CCNG ADMIN SYSTEM — CORE ENGINE
-   Simula archivos .txt via localStorage
-   Cada clave = un "archivo" independiente
-   ============================================= */
+/* ==============================================
+   CCNG ADMIN v2.5 — Firebase Firestore + localStorage
+   Datos compartidos para todos los visitantes
+   Backup local como fallback automático
+   ============================================== */
 
-const DB_KEYS = {
-  usuarios:     'ccng_usuarios',
-  pagos:        'ccng_pagos',
-  caja:         'ccng_caja',
-  ganancias:    'ccng_ganancias',
-  armas:        'ccng_armas',
-  asignaciones: 'ccng_asignaciones',
-  historial:    'ccng_historial',
-  config:       'ccng_config'
+// ---- CREDENCIALES ----
+const CREDS = { admin: 'ccng2024', lider: 'ccng123' };
+
+// ---- FIREBASE DOC NAME ----
+const FB_DOC = 'ccng_data';
+const FB_COLLECTION = 'database';
+
+// ---- DEFAULT EMPTY STATE ----
+const DEFAULT_STATE = {
+  usuarios: [], pagos: [], caja: [], ganancias: [],
+  armas: [], asignaciones: [], historial: [],
+  config: { cajaSaldo: 0 },
+  _version: 1
 };
 
-/* ---- I/O de "archivos" ---- */
-function readFile(key) {
-  try {
-    const raw = localStorage.getItem(DB_KEYS[key]);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch(e) { return []; }
-}
+// ---- APP STATE ----
+let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
+let _fbReady = false;
+let _unsubscribe = null;
+let _saving = false;
 
-function writeFile(key, data) {
-  try {
-    localStorage.setItem(DB_KEYS[key], JSON.stringify(data));
-    return true;
-  } catch(e) { return false; }
-}
-
-function readConfig() {
-  try {
-    const raw = localStorage.getItem(DB_KEYS.config);
-    if (!raw) return { cajaSaldo: 0 };
-    return JSON.parse(raw);
-  } catch(e) { return { cajaSaldo: 0 }; }
-}
-
-function writeConfig(cfg) {
-  localStorage.setItem(DB_KEYS.config, JSON.stringify(cfg));
-}
-
-/* ---- Generador de IDs ---- */
+// ---- ID GENERATOR ----
 let _idCounter = Date.now();
 function genId() { return ++_idCounter; }
 
-/* ---- Log de sistema ---- */
+// ---- SYSTEM LOG (in-memory only) ----
 const systemLog = [];
 function addLog(msg, type='info') {
   const entry = { time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'}), msg, type, ts: Date.now() };
@@ -1425,45 +830,214 @@ function addLog(msg, type='info') {
   renderDashLog();
 }
 
-/* ---- Historial persistente ---- */
-function addHistorial(accion, detalle) {
-  const h = readFile('historial');
-  h.unshift({ id: genId(), fecha: new Date().toLocaleString('es'), accion, detalle });
-  if (h.length > 200) h.pop();
-  writeFile('historial', h);
-  if (document.getElementById('panel-historial').classList.contains('active')) renderHistorial();
-}
-
-/* ---- Toast ---- */
+// ---- TOAST ----
 function toast(msg, tipo='ok') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.style.borderLeftColor = tipo==='ok' ? 'var(--green)' : tipo==='err' ? 'var(--red)' : 'var(--gold)';
+  t.style.borderLeftColor = tipo==='ok'?'var(--green)':tipo==='err'?'var(--red)':'var(--gold)';
   t.style.display = 'block';
   clearTimeout(t._timer);
   t._timer = setTimeout(()=>{ t.style.display='none'; }, 2800);
 }
 
-/* ---- Reloj ---- */
+// ---- CLOCK ----
 function updateClock() {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('es');
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-/* =============================================
-   AUTH
-   ============================================= */
-const CREDS = { admin: 'ccng2024', lider: 'ccng123' };
+// ==============================================
+// SYNC BAR UI
+// ==============================================
+function setSyncStatus(status, msg) {
+  const bar = document.getElementById('sync-bar');
+  const txt = document.getElementById('sync-text');
+  const timeEl = document.getElementById('sync-time');
+  bar.className = '';
+  bar.classList.add(status); // syncing | synced | error
+  txt.textContent = msg;
+  timeEl.textContent = new Date().toLocaleTimeString('es');
+}
 
+function setConnStatus(online) {
+  const dot = document.getElementById('conn-dot');
+  const txt = document.getElementById('conn-text');
+  if (!dot) return;
+  if (online) {
+    dot.className = 'dot-live';
+    txt.className = 'status-text';
+    txt.textContent = 'FIREBASE ONLINE';
+  } else {
+    dot.className = 'dot-offline';
+    txt.className = 'status-text offline';
+    txt.textContent = 'MODO LOCAL';
+  }
+}
+
+// ==============================================
+// LOCAL STORAGE BACKUP (safe — never overwrites with empty)
+// ==============================================
+const LS_KEY = 'ccng_state_v2';
+
+function saveLocal(state) {
+  try {
+    // NEVER save if state is empty/default to protect existing data
+    const hasData = state.usuarios.length > 0 || state.armas.length > 0 ||
+                    state.caja.length > 0 || state.pagos.length > 0 ||
+                    state.ganancias.length > 0;
+    if (hasData || state.config.cajaSaldo > 0) {
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+  } catch(e) { console.warn('localStorage save failed:', e); }
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Validate structure
+    if (!parsed.usuarios || !parsed.config) return null;
+    return parsed;
+  } catch(e) { return null; }
+}
+
+// Also migrate old format if present
+function migrateOldData() {
+  const OLD_KEYS = {
+    usuarios: 'ccng_usuarios', pagos: 'ccng_pagos', caja: 'ccng_caja',
+    ganancias: 'ccng_ganancias', armas: 'ccng_armas',
+    asignaciones: 'ccng_asignaciones', historial: 'ccng_historial'
+  };
+  let hasOld = false;
+  const migrated = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  for (const [key, lsKey] of Object.entries(OLD_KEYS)) {
+    const raw = localStorage.getItem(lsKey);
+    if (raw) {
+      try { migrated[key] = JSON.parse(raw); hasOld = true; } catch(e){}
+    }
+  }
+  const oldConfig = localStorage.getItem('ccng_config');
+  if (oldConfig) {
+    try { migrated.config = JSON.parse(oldConfig); hasOld = true; } catch(e){}
+  }
+  if (hasOld) {
+    console.log('CCNG: Migrating old localStorage format...');
+    saveLocal(migrated);
+    // Clean up old keys
+    Object.values(OLD_KEYS).forEach(k => localStorage.removeItem(k));
+    localStorage.removeItem('ccng_config');
+    localStorage.removeItem('ccng_init');
+    return migrated;
+  }
+  return null;
+}
+
+// ==============================================
+// FIREBASE READ / WRITE
+// ==============================================
+async function fbLoad() {
+  if (!window._firebaseReady) return null;
+  try {
+    const db = window._firebaseDB;
+    const docRef = window._firebaseDoc(db, FB_COLLECTION, FB_DOC);
+    const snap = await window._firebaseGetDoc(docRef);
+    if (snap.exists()) return snap.data();
+    return null;
+  } catch(e) {
+    console.warn('Firebase load error:', e);
+    return null;
+  }
+}
+
+async function fbSave(state) {
+  if (!window._firebaseReady || _saving) return false;
+  _saving = true;
+  setSyncStatus('syncing', 'Sincronizando con Firebase...');
+  try {
+    const db = window._firebaseDB;
+    const docRef = window._firebaseDoc(db, FB_COLLECTION, FB_DOC);
+    // Deep clone to avoid Firestore issues
+    const toSave = JSON.parse(JSON.stringify(state));
+    toSave._lastUpdate = new Date().toISOString();
+    await window._firebaseSetDoc(docRef, toSave);
+    setSyncStatus('synced', '✓ Datos sincronizados — todos los miembros ven esto en tiempo real');
+    saveLocal(state); // also keep local backup
+    _saving = false;
+    return true;
+  } catch(e) {
+    console.warn('Firebase save error:', e);
+    setSyncStatus('error', '⚠ Error de sync — datos guardados localmente');
+    saveLocal(state);
+    _saving = false;
+    return false;
+  }
+}
+
+// Subscribe to real-time updates
+function fbSubscribe() {
+  if (!window._firebaseReady) return;
+  try {
+    const db = window._firebaseDB;
+    const docRef = window._firebaseDoc(db, FB_COLLECTION, FB_DOC);
+    _unsubscribe = window._firebaseOnSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        const remoteData = snap.data();
+        // Only update if remote is newer than what we have
+        STATE = mergeState(remoteData);
+        saveLocal(STATE);
+        refreshAllPanels();
+        setConnStatus(true);
+        setSyncStatus('synced', '✓ Sincronizado en tiempo real con Firebase');
+      }
+    }, (err) => {
+      console.warn('Firebase snapshot error:', err);
+      setConnStatus(false);
+      setSyncStatus('error', '⚠ Sin conexión — trabajando en modo local');
+    });
+  } catch(e) {
+    console.warn('Firebase subscribe error:', e);
+  }
+}
+
+function mergeState(remote) {
+  // Make sure all keys exist with proper defaults
+  return {
+    usuarios:     Array.isArray(remote.usuarios)     ? remote.usuarios     : [],
+    pagos:        Array.isArray(remote.pagos)         ? remote.pagos         : [],
+    caja:         Array.isArray(remote.caja)          ? remote.caja          : [],
+    ganancias:    Array.isArray(remote.ganancias)     ? remote.ganancias     : [],
+    armas:        Array.isArray(remote.armas)         ? remote.armas         : [],
+    asignaciones: Array.isArray(remote.asignaciones)  ? remote.asignaciones  : [],
+    historial:    Array.isArray(remote.historial)     ? remote.historial     : [],
+    config:       remote.config || { cajaSaldo: 0 },
+    _version:     remote._version || 1,
+  };
+}
+
+// ==============================================
+// SAVE — always writes to Firebase + local
+// ==============================================
+async function save() {
+  const ok = await fbSave(STATE);
+  if (!ok) {
+    saveLocal(STATE);
+  }
+  updateBadges();
+}
+
+// ==============================================
+// AUTH
+// ==============================================
 function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
   const err = document.getElementById('login-error');
-
   if (CREDS[u] && CREDS[u] === p) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
+    document.getElementById('admin-display-name').textContent = u.charAt(0).toUpperCase() + u.slice(1);
     addLog(`Sesión iniciada por "${u}"`, 'green');
     initApp();
   } else {
@@ -1473,9 +1047,11 @@ function doLogin() {
 }
 
 document.getElementById('login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('login-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
 
 function logout() {
   if(confirm('¿Cerrar sesión?')) {
+    if (_unsubscribe) { _unsubscribe(); _unsubscribe = null; }
     document.getElementById('login-screen').style.display='flex';
     document.getElementById('app').style.display='none';
     document.getElementById('login-user').value='';
@@ -1483,11 +1059,75 @@ function logout() {
   }
 }
 
-/* =============================================
-   INIT
-   ============================================= */
-function initApp() {
-  seedData();
+// ==============================================
+// INIT
+// ==============================================
+async function initApp() {
+  setSyncStatus('syncing', 'Conectando con Firebase...');
+
+  // 1. Try to migrate old format
+  const migrated = migrateOldData();
+
+  // 2. Load local backup first (instant UI)
+  const localData = migrated || loadLocal();
+  if (localData) {
+    STATE = mergeState(localData);
+    refreshAllPanels();
+    addLog('Datos locales cargados', 'blue');
+  }
+
+  // 3. Wait for Firebase and load remote
+  const tryFirebase = async () => {
+    if (window._firebaseReady) {
+      try {
+        const remoteData = await fbLoad();
+        if (remoteData) {
+          STATE = mergeState(remoteData);
+          saveLocal(STATE);
+          refreshAllPanels();
+          addLog('Firebase: datos remotos cargados ✓', 'green');
+          setConnStatus(true);
+          setSyncStatus('synced', '✓ Conectado a Firebase — datos en tiempo real');
+        } else if (localData) {
+          // First time on Firebase — push local data up
+          await fbSave(STATE);
+          addLog('Datos locales subidos a Firebase ✓', 'gold');
+        } else {
+          addLog('Sistema iniciado — base de datos vacía', 'green');
+          setSyncStatus('synced', '✓ Firebase conectado — base de datos vacía');
+        }
+        fbSubscribe();
+      } catch(e) {
+        console.warn('Firebase init error:', e);
+        setConnStatus(false);
+        setSyncStatus('error', '⚠ Firebase no disponible — modo local activo');
+      }
+    } else {
+      setTimeout(tryFirebase, 500);
+    }
+  };
+  tryFirebase();
+}
+
+// ==============================================
+// NAVIGATION
+// ==============================================
+const panelTitles = {
+  dashboard:'Dashboard', miembros:'Miembros', rangos:'Jerarquía',
+  caja:'Caja Central', pagos:'Pagos', ganancias:'Ganancias',
+  armas:'Armamento', asignaciones:'Asignaciones de Armas', historial:'Historial'
+};
+
+function showPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent = panelTitles[id]||id;
+  addLog(`Panel: ${panelTitles[id]||id}`, 'blue');
+}
+
+function refreshAllPanels() {
   updateBadges();
   renderDashboard();
   renderMiembros();
@@ -1500,83 +1140,55 @@ function initApp() {
   renderHistorial();
 }
 
-/* Sistema vacío — sin datos de ejemplo */
-function seedData() {
-  if (localStorage.getItem('ccng_init')) return;
-  writeFile('usuarios', []);
-  writeFile('armas', []);
-  writeFile('pagos', []);
-  writeFile('caja', []);
-  writeFile('ganancias', []);
-  writeFile('asignaciones', []);
-  writeFile('historial', []);
-  writeConfig({ cajaSaldo: 0 });
-  localStorage.setItem('ccng_init', '1');
-  addLog('Sistema iniciado — base de datos vacía', 'green');
-}
-
-/* =============================================
-   NAVIGATION
-   ============================================= */
-const panelTitles = {
-  dashboard: 'Dashboard', miembros: 'Miembros', rangos: 'Jerarquía',
-  caja: 'Caja Central', pagos: 'Pagos', ganancias: 'Ganancias',
-  armas: 'Armamento', asignaciones: 'Asignaciones de Armas', historial: 'Historial'
-};
-
-function showPanel(id, el) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  document.getElementById('page-title').textContent = panelTitles[id] || id;
-  addLog(`Panel abierto: ${panelTitles[id] || id}`, 'blue');
-}
-
 function updateBadges() {
-  document.getElementById('badge-miembros').textContent = readFile('usuarios').length;
-  document.getElementById('badge-pagos').textContent = readFile('pagos').filter(p=>p.estado==='pendiente').length;
-  document.getElementById('badge-armas').textContent = readFile('armas').reduce((s,a)=>s+a.cantidad,0);
+  document.getElementById('badge-miembros').textContent = STATE.usuarios.length;
+  document.getElementById('badge-pagos').textContent = STATE.pagos.filter(p=>p.estado==='pendiente').length;
+  document.getElementById('badge-armas').textContent = STATE.armas.reduce((s,a)=>s+(a.cantidad||0),0);
 }
 
-/* =============================================
-   HELPERS UI
-   ============================================= */
+// ==============================================
+// HELPERS UI
+// ==============================================
 function badgeRango(r) {
-  const m = { Lider:'lider', Sub:'sub', Capitan:'capitan', Soldado:'soldado', Recluta:'recluta' };
-  const labels = { Lider:'👑 Líder', Sub:'⚔️ Sub-Líder', Capitan:'🎖 Capitán', Soldado:'💪 Soldado', Recluta:'🔰 Recluta' };
+  const m = {Lider:'lider',Sub:'sub',Capitan:'capitan',Soldado:'soldado',Recluta:'recluta'};
+  const labels = {Lider:'👑 Líder',Sub:'⚔️ Sub-Líder',Capitan:'🎖 Capitán',Soldado:'💪 Soldado',Recluta:'🔰 Recluta'};
   return `<span class="badge badge-${m[r]||'recluta'}">${labels[r]||r}</span>`;
 }
-
 function badgeRareza(r) {
-  const labels = { comun:'⚪ Común', raro:'🔵 Raro', epico:'🟣 Épico', legendario:'🟡 Legendario' };
+  const labels = {comun:'⚪ Común',raro:'🔵 Raro',epico:'🟣 Épico',legendario:'🟡 Legendario'};
   return `<span class="badge badge-${r}">${labels[r]||r}</span>`;
 }
-
 function badgeTipo(t) {
-  const icons = { pistola:'🔫', rifle:'🎯', smg:'💥', sniper:'🔭', escopeta:'🪓', melee:'⚔️' };
+  const icons = {pistola:'🔫',rifle:'🎯',smg:'💥',sniper:'🔭',escopeta:'🪓',melee:'⚔️'};
   return `<span style="font-size:13px;">${icons[t]||'🔫'}</span> ${t.toUpperCase()}`;
 }
-
 function avatarLetras(nombre) {
-  return nombre.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+  return (nombre||'?').split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
 }
-
 function fmtMoney(n) {
-  return '$' + Number(n).toLocaleString('es');
+  return '$' + Number(n||0).toLocaleString('es');
+}
+function highlight(text, q) {
+  if (!q) return text;
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
 }
 
-/* =============================================
-   DASHBOARD
-   ============================================= */
+// ==============================================
+// HISTORIAL (in STATE)
+// ==============================================
+function addHistorial(accion, detalle) {
+  STATE.historial.unshift({ id: genId(), fecha: new Date().toLocaleString('es'), accion, detalle });
+  if (STATE.historial.length > 200) STATE.historial.pop();
+}
+
+// ==============================================
+// DASHBOARD
+// ==============================================
 function renderDashboard() {
-  const usuarios = readFile('usuarios');
-  const armas = readFile('armas');
-  const pagos = readFile('pagos');
-  const ganancias = readFile('ganancias');
-  const cfg = readConfig();
-  const totalArmas = armas.reduce((s,a)=>s+a.cantidad,0);
-  const totalGanancias = ganancias.reduce((s,g)=>s+Number(g.monto),0);
+  const { usuarios, armas, pagos, ganancias, caja, config } = STATE;
+  const totalArmas = armas.reduce((s,a)=>s+(a.cantidad||0),0);
+  const totalGanancias = ganancias.reduce((s,g)=>s+Number(g.monto||0),0);
   const pendientes = pagos.filter(p=>p.estado==='pendiente').length;
 
   document.getElementById('dash-stats').innerHTML = `
@@ -1588,7 +1200,7 @@ function renderDashboard() {
     </div>
     <div class="stat-card gold">
       <div class="stat-label">Caja Central</div>
-      <div class="stat-value">${fmtMoney(cfg.cajaSaldo)}</div>
+      <div class="stat-value">${fmtMoney(config.cajaSaldo)}</div>
       <div class="stat-sub">Balance actual</div>
       <div class="stat-icon">💰</div>
     </div>
@@ -1604,25 +1216,22 @@ function renderDashboard() {
       <div class="stat-sub">${armas.length} tipos de armas</div>
       <div class="stat-icon">🔫</div>
     </div>
-    ${pendientes > 0 ? `<div class="stat-card red">
+    ${pendientes>0?`<div class="stat-card red">
       <div class="stat-label">Pagos Pendientes</div>
       <div class="stat-value">${pendientes}</div>
       <div class="stat-sub">Requieren atención</div>
       <div class="stat-icon">⚠️</div>
-    </div>` : ''}
+    </div>`:''}
   `;
 
-  // Últimas transacciones
-  const caja = readFile('caja');
-  document.getElementById('dash-trans').innerHTML = caja.slice(0,6).map(m=>`
+  document.getElementById('dash-trans').innerHTML = caja.slice().reverse().slice(0,6).map(m=>`
     <div class="log-item">
-      <div class="log-time">${m.fecha.split('/')[0]+'/'+m.fecha.split('/')[1]||'--'}</div>
+      <div class="log-time">${(m.fecha||'').substring(0,5)}</div>
       <div class="log-dot ${m.tipo==='ingreso'?'green':'red'}"></div>
-      <div class="log-msg"><strong>${m.tipo==='ingreso'?'+':'-'}${fmtMoney(m.monto)}</strong> ${m.desc}</div>
+      <div class="log-msg"><strong>${m.tipo==='ingreso'?'+':'−'}${fmtMoney(m.monto)}</strong> ${m.desc||''}</div>
     </div>
   `).join('') || '<div class="empty-state">SIN TRANSACCIONES</div>';
 
-  // Miembros recientes
   document.getElementById('dash-miembros').innerHTML = usuarios.slice(0,5).map(u=>`
     <tr>
       <td><div class="member-cell">
@@ -1630,7 +1239,7 @@ function renderDashboard() {
         <div><div class="member-name">${u.nombre}</div><div class="member-id">#${u.id}</div></div>
       </div></td>
       <td>${badgeRango(u.rango)}</td>
-      <td><span class="badge badge-${u.estado}">${u.estado.toUpperCase()}</span></td>
+      <td><span class="badge badge-${u.estado}">${(u.estado||'').toUpperCase()}</span></td>
       <td style="font-family:var(--font-mono);color:var(--gold)">${fmtMoney(u.dinero)}</td>
     </tr>
   `).join('') || '<tr><td colspan="4" class="empty-state">SIN MIEMBROS</td></tr>';
@@ -1641,7 +1250,7 @@ function renderDashboard() {
 function renderDashLog() {
   const el = document.getElementById('dash-log');
   if (!el) return;
-  const colorMap = { green:'green', red:'red', blue:'blue', gold:'gold', info:'blue' };
+  const colorMap = {green:'green',red:'red',blue:'blue',gold:'gold',info:'blue'};
   el.innerHTML = systemLog.slice(0,10).map(l=>`
     <div class="log-item">
       <div class="log-time">${l.time}</div>
@@ -1651,130 +1260,117 @@ function renderDashLog() {
   `).join('') || '<div class="empty-state">SIN LOGS</div>';
 }
 
-/* =============================================
-   MIEMBROS
-   ============================================= */
+// ==============================================
+// MIEMBROS
+// ==============================================
 function renderMiembros(searchTerm='') {
-  let usuarios = readFile('usuarios');
+  let usuarios = STATE.usuarios;
   if (searchTerm) {
     const q = searchTerm.toLowerCase();
-    usuarios = usuarios.filter(u => u.nombre.toLowerCase().includes(q) || u.rango.toLowerCase().includes(q));
+    usuarios = usuarios.filter(u=>(u.nombre||'').toLowerCase().includes(q)||(u.rango||'').toLowerCase().includes(q));
   }
-
   document.getElementById('tabla-miembros').innerHTML = usuarios.map(u=>`
     <tr>
       <td><div class="member-cell">
         <div class="member-avatar">${avatarLetras(u.nombre)}</div>
         <div>
-          <div class="member-name">${searchTerm ? highlight(u.nombre, searchTerm) : u.nombre}</div>
+          <div class="member-name">${searchTerm?highlight(u.nombre,searchTerm):u.nombre}</div>
           <div class="member-id">#${u.id}</div>
         </div>
       </div></td>
       <td>${badgeRango(u.rango)}</td>
-      <td><span class="badge badge-${u.estado}">${u.estado.toUpperCase()}</span></td>
+      <td><span class="badge badge-${u.estado}">${(u.estado||'').toUpperCase()}</span></td>
       <td style="font-family:var(--font-mono);color:var(--gold)">${fmtMoney(u.dinero)}</td>
       <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-2)">${(u.armas||[]).join(', ')||'—'}</td>
       <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${u.fecha||'—'}</td>
-      <td>
-        <div class="action-group">
-          <button class="btn btn-ghost btn-sm" onclick="editarMiembro(${u.id})">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="eliminarMiembro(${u.id})">🗑</button>
-        </div>
-      </td>
+      <td><div class="action-group">
+        <button class="btn btn-ghost btn-sm" onclick="editarMiembro(${u.id})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarMiembro(${u.id})">🗑</button>
+      </div></td>
     </tr>
   `).join('') || '<tr><td colspan="7" class="empty-state">SIN MIEMBROS REGISTRADOS</td></tr>';
 }
 
-function abrirModalMiembro(id=null) {
-  document.getElementById('miembro-edit-id').value = '';
-  document.getElementById('m-nombre').value = '';
-  document.getElementById('m-rango').value = 'Soldado';
-  document.getElementById('m-dinero').value = 0;
-  document.getElementById('m-estado').value = 'activo';
-  document.getElementById('m-notas').value = '';
-  document.getElementById('modal-miembro-title').textContent = 'Nuevo Miembro';
+function abrirModalMiembro() {
+  document.getElementById('miembro-edit-id').value='';
+  document.getElementById('m-nombre').value='';
+  document.getElementById('m-rango').value='Soldado';
+  document.getElementById('m-dinero').value=0;
+  document.getElementById('m-estado').value='activo';
+  document.getElementById('m-notas').value='';
+  document.getElementById('modal-miembro-title').textContent='Nuevo Miembro';
   abrirModal('modal-miembro');
 }
 
 function editarMiembro(id) {
-  const u = readFile('usuarios').find(x=>x.id===id);
+  const u = STATE.usuarios.find(x=>x.id===id);
   if(!u) return;
-  document.getElementById('miembro-edit-id').value = id;
-  document.getElementById('m-nombre').value = u.nombre;
-  document.getElementById('m-rango').value = u.rango;
-  document.getElementById('m-dinero').value = u.dinero;
-  document.getElementById('m-estado').value = u.estado;
-  document.getElementById('m-notas').value = u.notas||'';
-  document.getElementById('modal-miembro-title').textContent = 'Editar Miembro';
+  document.getElementById('miembro-edit-id').value=id;
+  document.getElementById('m-nombre').value=u.nombre;
+  document.getElementById('m-rango').value=u.rango;
+  document.getElementById('m-dinero').value=u.dinero;
+  document.getElementById('m-estado').value=u.estado;
+  document.getElementById('m-notas').value=u.notas||'';
+  document.getElementById('modal-miembro-title').textContent='Editar Miembro';
   abrirModal('modal-miembro');
 }
 
-function guardarMiembro() {
+async function guardarMiembro() {
   const nombre = document.getElementById('m-nombre').value.trim();
   if (!nombre) { toast('El nombre es requerido','err'); return; }
-
   const editId = document.getElementById('miembro-edit-id').value;
-  const usuarios = readFile('usuarios');
   const datos = {
-    nombre,
-    rango: document.getElementById('m-rango').value,
+    nombre, rango: document.getElementById('m-rango').value,
     dinero: Number(document.getElementById('m-dinero').value)||0,
     estado: document.getElementById('m-estado').value,
     notas: document.getElementById('m-notas').value,
     fecha: new Date().toLocaleDateString('es'),
   };
-
   if (editId) {
-    const idx = usuarios.findIndex(u=>u.id===Number(editId));
-    if(idx>=0) { usuarios[idx] = {...usuarios[idx], ...datos}; }
+    const idx = STATE.usuarios.findIndex(u=>u.id===Number(editId));
+    if(idx>=0) STATE.usuarios[idx]={...STATE.usuarios[idx],...datos};
     addHistorial('Miembro editado', `"${nombre}" — Rango: ${datos.rango}`);
     addLog(`Miembro editado: "${nombre}"`, 'blue');
     toast('✅ Miembro actualizado');
   } else {
-    datos.id = genId();
-    datos.armas = [];
-    usuarios.push(datos);
+    datos.id=genId(); datos.armas=[];
+    STATE.usuarios.push(datos);
     addHistorial('Nuevo miembro', `"${nombre}" agregado con rango ${datos.rango}`);
     addLog(`Nuevo miembro: "${nombre}" (${datos.rango})`, 'green');
     toast('✅ Miembro registrado');
   }
-
-  writeFile('usuarios', usuarios);
   cerrarModal('modal-miembro');
   renderMiembros();
   renderDashboard();
-  updateBadges();
+  await save();
 }
 
-function eliminarMiembro(id) {
-  const u = readFile('usuarios').find(x=>x.id===id);
+async function eliminarMiembro(id) {
+  const u = STATE.usuarios.find(x=>x.id===id);
   if(!u) return;
   if(!confirm(`¿Eliminar a "${u.nombre}"? Esta acción no se puede deshacer.`)) return;
-  const usuarios = readFile('usuarios').filter(x=>x.id!==id);
-  writeFile('usuarios', usuarios);
-  addHistorial('Miembro eliminado', `"${u.nombre}" (#${id}) eliminado del sistema`);
+  STATE.usuarios = STATE.usuarios.filter(x=>x.id!==id);
+  addHistorial('Miembro eliminado', `"${u.nombre}" (#${id}) eliminado`);
   addLog(`Miembro eliminado: "${u.nombre}"`, 'red');
   toast('🗑 Miembro eliminado','warn');
   renderMiembros();
   renderDashboard();
-  updateBadges();
+  await save();
 }
 
-/* =============================================
-   RANGOS / JERARQUÍA
-   ============================================= */
+// ==============================================
+// RANGOS
+// ==============================================
 function renderRangos() {
-  const usuarios = readFile('usuarios');
   const rangos = [
-    { key:'Lider', label:'Líder', icon:'👑', color:'var(--gold)', desc:'Control total de la organización. Aprobación de operaciones mayores.' },
-    { key:'Sub', label:'Sub-Líder', icon:'⚔️', color:'var(--accent2)', desc:'Segundo al mando. Coordina operaciones y gestiona capitanes.' },
-    { key:'Capitan', label:'Capitán', icon:'🎖', color:'var(--blue)', desc:'Lidera sectores. Supervisa soldados en operaciones de campo.' },
-    { key:'Soldado', label:'Soldado', icon:'💪', color:'var(--green)', desc:'Miembro activo. Ejecuta operaciones y misiones asignadas.' },
-    { key:'Recluta', label:'Recluta', icon:'🔰', color:'var(--text-2)', desc:'En período de prueba. Acceso limitado hasta ascenso.' },
+    {key:'Lider',label:'Líder',icon:'👑',color:'var(--gold)',desc:'Control total. Aprobación de operaciones mayores.'},
+    {key:'Sub',label:'Sub-Líder',icon:'⚔️',color:'var(--accent2)',desc:'Segundo al mando. Coordina operaciones y gestiona capitanes.'},
+    {key:'Capitan',label:'Capitán',icon:'🎖',color:'var(--blue)',desc:'Lidera sectores. Supervisa soldados en campo.'},
+    {key:'Soldado',label:'Soldado',icon:'💪',color:'var(--green)',desc:'Miembro activo. Ejecuta operaciones y misiones.'},
+    {key:'Recluta',label:'Recluta',icon:'🔰',color:'var(--text-2)',desc:'En período de prueba. Acceso limitado hasta ascenso.'},
   ];
-
   document.getElementById('rangos-content').innerHTML = rangos.map(r=>{
-    const members = usuarios.filter(u=>u.rango===r.key);
+    const members = STATE.usuarios.filter(u=>u.rango===r.key);
     return `
     <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid ${r.color};border-radius:6px;padding:16px 20px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -1785,88 +1381,76 @@ function renderRangos() {
         </div>
         <div style="margin-left:auto;font-family:var(--font-mono);font-size:11px;color:${r.color};">${members.length} miembro${members.length!==1?'s':''}</div>
       </div>
-      ${members.length > 0 ? `
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+      ${members.length>0?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
         ${members.map(m=>`<div style="display:flex;align-items:center;gap:6px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:4px 8px;">
           <div class="member-avatar" style="width:22px;height:22px;font-size:9px;">${avatarLetras(m.nombre)}</div>
           <span style="font-size:12px;">${m.nombre}</span>
           <span class="badge badge-${m.estado}" style="font-size:9px;">${m.estado}</span>
         </div>`).join('')}
-      </div>` : ''}
+      </div>`:''}
     </div>`;
   }).join('');
 }
 
-/* =============================================
-   CAJA CENTRAL
-   ============================================= */
+// ==============================================
+// CAJA
+// ==============================================
 function renderCaja() {
-  const movs = readFile('caja');
-  const cfg = readConfig();
-  const ingresos = movs.filter(m=>m.tipo==='ingreso').reduce((s,m)=>s+m.monto,0);
-  const egresos = movs.filter(m=>m.tipo==='egreso').reduce((s,m)=>s+m.monto,0);
-
-  document.getElementById('caja-total-display').textContent = fmtMoney(cfg.cajaSaldo);
+  const { caja, config } = STATE;
+  const ingresos = caja.filter(m=>m.tipo==='ingreso').reduce((s,m)=>s+(m.monto||0),0);
+  const egresos = caja.filter(m=>m.tipo==='egreso').reduce((s,m)=>s+(m.monto||0),0);
+  document.getElementById('caja-total-display').textContent = fmtMoney(config.cajaSaldo);
   document.getElementById('caja-ing').textContent = fmtMoney(ingresos);
   document.getElementById('caja-eg').textContent = fmtMoney(egresos);
-
-  document.getElementById('tabla-caja').innerHTML = movs.slice().reverse().map(m=>`
+  document.getElementById('tabla-caja').innerHTML = caja.slice().reverse().map(m=>`
     <tr>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${m.fecha}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${m.fecha||''}</td>
       <td><span class="badge badge-${m.tipo}">${m.tipo==='ingreso'?'⬆ INGRESO':'⬇ EGRESO'}</span></td>
       <td style="font-family:var(--font-mono);color:${m.tipo==='ingreso'?'var(--green)':'var(--red)'};font-weight:600;">
         ${m.tipo==='ingreso'?'+':'−'}${fmtMoney(m.monto)}
       </td>
-      <td style="color:var(--text-2)">${m.desc}</td>
+      <td style="color:var(--text-2)">${m.desc||''}</td>
       <td style="font-family:var(--font-mono);color:var(--gold)">${fmtMoney(m.balance)}</td>
     </tr>
   `).join('') || '<tr><td colspan="5" class="empty-state">SIN MOVIMIENTOS</td></tr>';
 }
 
-function registrarMovimiento() {
+async function registrarMovimiento() {
   const tipo = document.getElementById('mov-tipo').value;
   const monto = Number(document.getElementById('mov-monto').value);
   const desc = document.getElementById('mov-desc').value.trim();
-  if (!monto || monto <= 0) { toast('Ingresa un monto válido','err'); return; }
+  if (!monto||monto<=0) { toast('Ingresa un monto válido','err'); return; }
   if (!desc) { toast('La descripción es requerida','err'); return; }
+  if (tipo==='egreso' && monto > STATE.config.cajaSaldo) { toast('⚠ Saldo insuficiente','err'); return; }
 
-  const cfg = readConfig();
-  if (tipo==='egreso' && monto > cfg.cajaSaldo) { toast('⚠ Saldo insuficiente en caja','err'); return; }
-
-  const movs = readFile('caja');
-  const newBalance = tipo==='ingreso' ? cfg.cajaSaldo + monto : cfg.cajaSaldo - monto;
-  movs.push({ id: genId(), tipo, monto, desc, fecha: new Date().toLocaleDateString('es'), balance: newBalance });
-  writeFile('caja', movs);
-  cfg.cajaSaldo = newBalance;
-  writeConfig(cfg);
-
-  document.getElementById('mov-monto').value = '';
-  document.getElementById('mov-desc').value = '';
-
-  addHistorial(`Movimiento de caja`, `${tipo.toUpperCase()} ${fmtMoney(monto)}: ${desc}`);
-  addLog(`Movimiento caja: ${tipo} ${fmtMoney(monto)}`, tipo==='ingreso'?'green':'red');
+  const newBalance = tipo==='ingreso' ? STATE.config.cajaSaldo+monto : STATE.config.cajaSaldo-monto;
+  STATE.caja.push({ id:genId(), tipo, monto, desc, fecha:new Date().toLocaleDateString('es'), balance:newBalance });
+  STATE.config.cajaSaldo = newBalance;
+  document.getElementById('mov-monto').value='';
+  document.getElementById('mov-desc').value='';
+  addHistorial('Movimiento caja', `${tipo.toUpperCase()} ${fmtMoney(monto)}: ${desc}`);
+  addLog(`Caja: ${tipo} ${fmtMoney(monto)}`, tipo==='ingreso'?'green':'red');
   toast(`✅ ${tipo==='ingreso'?'Ingreso':'Egreso'} registrado`);
-  renderCaja();
-  renderDashboard();
+  renderCaja(); renderDashboard();
+  await save();
 }
 
-/* =============================================
-   PAGOS
-   ============================================= */
+// ==============================================
+// PAGOS
+// ==============================================
 function renderPagos() {
-  const pagos = readFile('pagos');
-  document.getElementById('tabla-pagos').innerHTML = pagos.slice().reverse().map(p=>`
+  document.getElementById('tabla-pagos').innerHTML = STATE.pagos.slice().reverse().map(p=>`
     <tr>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${p.fecha}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${p.fecha||''}</td>
       <td><div style="display:flex;align-items:center;gap:6px;">
         <div class="member-avatar" style="width:24px;height:24px;font-size:9px;">${avatarLetras(p.miembro)}</div>
         ${p.miembro}
       </div></td>
       <td style="font-family:var(--font-mono);color:var(--gold);font-weight:600;">${fmtMoney(p.monto)}</td>
-      <td style="color:var(--text-2)">${p.concepto}</td>
-      <td><span class="badge badge-${p.estado==='pagado'?'activo':'inactivo'}">${p.estado.toUpperCase()}</span></td>
+      <td style="color:var(--text-2)">${p.concepto||''}</td>
+      <td><span class="badge badge-${p.estado==='pagado'?'activo':'inactivo'}">${(p.estado||'').toUpperCase()}</span></td>
       <td>
-        ${p.estado==='pendiente'?`<button class="btn btn-success btn-sm" onclick="marcarPagado(${p.id})">✓ Marcar pagado</button>`:''}
+        ${p.estado==='pendiente'?`<button class="btn btn-success btn-sm" onclick="marcarPagado(${p.id})">✓ Pagado</button>`:''}
         <button class="btn btn-danger btn-sm" onclick="eliminarPago(${p.id})">🗑</button>
       </td>
     </tr>
@@ -1875,56 +1459,50 @@ function renderPagos() {
 }
 
 function abrirModalPago() {
-  const usuarios = readFile('usuarios');
-  document.getElementById('p-miembro').innerHTML = usuarios.map(u=>`<option value="${u.nombre}">${u.nombre}</option>`).join('');
-  document.getElementById('p-monto').value = '';
-  document.getElementById('p-concepto').value = '';
-  document.getElementById('p-estado').value = 'pagado';
+  document.getElementById('p-miembro').innerHTML = STATE.usuarios.map(u=>`<option value="${u.nombre}">${u.nombre}</option>`).join('');
+  document.getElementById('p-monto').value='';
+  document.getElementById('p-concepto').value='';
+  document.getElementById('p-estado').value='pagado';
   abrirModal('modal-pago');
 }
 
-function guardarPago() {
+async function guardarPago() {
   const miembro = document.getElementById('p-miembro').value;
   const monto = Number(document.getElementById('p-monto').value);
   const concepto = document.getElementById('p-concepto').value.trim();
   if (!monto||!concepto) { toast('Completa todos los campos','err'); return; }
-
-  const pagos = readFile('pagos');
-  pagos.push({ id: genId(), miembro, monto, concepto, estado: document.getElementById('p-estado').value, fecha: new Date().toLocaleDateString('es') });
-  writeFile('pagos', pagos);
+  STATE.pagos.push({ id:genId(), miembro, monto, concepto, estado:document.getElementById('p-estado').value, fecha:new Date().toLocaleDateString('es') });
   addHistorial('Pago registrado', `${miembro} — ${fmtMoney(monto)} — ${concepto}`);
-  addLog(`Pago registrado: ${miembro} ${fmtMoney(monto)}`, 'blue');
+  addLog(`Pago: ${miembro} ${fmtMoney(monto)}`, 'blue');
   toast('✅ Pago registrado');
   cerrarModal('modal-pago');
-  renderPagos();
-  renderDashboard();
+  renderPagos(); renderDashboard();
+  await save();
 }
 
-function marcarPagado(id) {
-  const pagos = readFile('pagos');
-  const p = pagos.find(x=>x.id===id);
-  if(p) { p.estado='pagado'; writeFile('pagos', pagos); addLog(`Pago marcado como pagado: ${p.miembro}`, 'green'); toast('✅ Marcado como pagado'); renderPagos(); }
+async function marcarPagado(id) {
+  const p = STATE.pagos.find(x=>x.id===id);
+  if(p) { p.estado='pagado'; addLog(`Pago marcado pagado: ${p.miembro}`,'green'); toast('✅ Pagado'); renderPagos(); await save(); }
 }
 
-function eliminarPago(id) {
+async function eliminarPago(id) {
   if(!confirm('¿Eliminar este pago?')) return;
-  writeFile('pagos', readFile('pagos').filter(x=>x.id!==id));
+  STATE.pagos = STATE.pagos.filter(x=>x.id!==id);
   toast('🗑 Pago eliminado','warn');
   renderPagos();
+  await save();
 }
 
-/* =============================================
-   GANANCIAS
-   ============================================= */
+// ==============================================
+// GANANCIAS
+// ==============================================
 function renderGanancias() {
-  const ganancias = readFile('ganancias');
-  const tipos = ['robo','mision','evento','extorsion','contrato','otro'];
-  const tipoLabels = { robo:'🏦 Robo', mision:'🎯 Misión RP', evento:'🎪 Evento', extorsion:'💼 Extorsión', contrato:'📄 Contrato', otro:'📌 Otro' };
-
-  const statsByTipo = tipos.map(t => ({
-    tipo: t, label: tipoLabels[t],
-    total: ganancias.filter(g=>g.tipo===t).reduce((s,g)=>s+Number(g.monto),0),
-    count: ganancias.filter(g=>g.tipo===t).length
+  const tipoLabels = {robo:'🏦 Robo',mision:'🎯 Misión RP',evento:'🎪 Evento',extorsion:'💼 Extorsión',contrato:'📄 Contrato',otro:'📌 Otro'};
+  const tipos = Object.keys(tipoLabels);
+  const statsByTipo = tipos.map(t=>({
+    tipo:t, label:tipoLabels[t],
+    total: STATE.ganancias.filter(g=>g.tipo===t).reduce((s,g)=>s+Number(g.monto||0),0),
+    count: STATE.ganancias.filter(g=>g.tipo===t).length
   })).filter(x=>x.count>0);
 
   document.getElementById('stats-ganancias').innerHTML = statsByTipo.map(s=>`
@@ -1935,106 +1513,86 @@ function renderGanancias() {
     </div>
   `).join('');
 
-  document.getElementById('tabla-ganancias').innerHTML = ganancias.slice().reverse().map(g=>`
+  document.getElementById('tabla-ganancias').innerHTML = STATE.ganancias.slice().reverse().map(g=>`
     <tr>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${g.fecha}</td>
-      <td style="font-weight:600">${g.nombre}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${g.fecha||''}</td>
+      <td style="font-weight:600">${g.nombre||''}</td>
       <td><span style="font-size:12px;">${tipoLabels[g.tipo]||g.tipo}</span></td>
       <td style="font-family:var(--font-mono);color:var(--green);font-weight:600;">+${fmtMoney(g.monto)}</td>
       <td style="font-size:12px;color:var(--text-2)">${g.participantes||'—'}</td>
-      <td>
-        <button class="btn btn-danger btn-sm" onclick="eliminarGanancia(${g.id})">🗑</button>
-      </td>
+      <td><button class="btn btn-danger btn-sm" onclick="eliminarGanancia(${g.id})">🗑</button></td>
     </tr>
   `).join('') || '<tr><td colspan="6" class="empty-state">SIN ACTIVIDADES REGISTRADAS</td></tr>';
 }
 
 function abrirModalGanancia() {
-  document.getElementById('g-nombre').value='';
+  ['g-nombre','g-monto','g-participantes','g-desc'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('g-tipo').value='robo';
-  document.getElementById('g-monto').value='';
-  document.getElementById('g-participantes').value='';
-  document.getElementById('g-desc').value='';
   abrirModal('modal-ganancia');
 }
 
-function guardarGanancia() {
+async function guardarGanancia() {
   const nombre = document.getElementById('g-nombre').value.trim();
   const monto = Number(document.getElementById('g-monto').value);
   if(!nombre||!monto) { toast('Nombre y monto requeridos','err'); return; }
-
-  const ganancias = readFile('ganancias');
   const nueva = {
-    id: genId(),
-    nombre,
-    tipo: document.getElementById('g-tipo').value,
-    monto,
-    participantes: document.getElementById('g-participantes').value.trim(),
-    desc: document.getElementById('g-desc').value.trim(),
-    fecha: new Date().toLocaleDateString('es')
+    id:genId(), nombre, tipo:document.getElementById('g-tipo').value, monto,
+    participantes:document.getElementById('g-participantes').value.trim(),
+    desc:document.getElementById('g-desc').value.trim(),
+    fecha:new Date().toLocaleDateString('es')
   };
-  ganancias.push(nueva);
-  writeFile('ganancias', ganancias);
-
-  // Actualizar caja automáticamente
-  const cfg = readConfig();
-  const movs = readFile('caja');
-  const newBalance = cfg.cajaSaldo + monto;
-  movs.push({ id: genId(), tipo:'ingreso', monto, desc:`Ganancia: ${nombre}`, fecha: nueva.fecha, balance: newBalance });
-  writeFile('caja', movs);
-  cfg.cajaSaldo = newBalance;
-  writeConfig(cfg);
-
-  addHistorial('Actividad registrada', `${nombre} — +${fmtMoney(monto)}`);
-  addLog(`Nueva ganancia: ${nombre} +${fmtMoney(monto)}`, 'green');
+  STATE.ganancias.push(nueva);
+  // Auto-update caja
+  const newBalance = STATE.config.cajaSaldo + monto;
+  STATE.caja.push({ id:genId(), tipo:'ingreso', monto, desc:`Ganancia: ${nombre}`, fecha:nueva.fecha, balance:newBalance });
+  STATE.config.cajaSaldo = newBalance;
+  addHistorial('Actividad', `${nombre} — +${fmtMoney(monto)}`);
+  addLog(`Ganancia: ${nombre} +${fmtMoney(monto)}`, 'green');
   toast('✅ Actividad registrada');
   cerrarModal('modal-ganancia');
-  renderGanancias();
-  renderCaja();
-  renderDashboard();
+  renderGanancias(); renderCaja(); renderDashboard();
+  await save();
 }
 
-function eliminarGanancia(id) {
+async function eliminarGanancia(id) {
   if(!confirm('¿Eliminar esta actividad?')) return;
-  writeFile('ganancias', readFile('ganancias').filter(x=>x.id!==id));
+  STATE.ganancias = STATE.ganancias.filter(x=>x.id!==id);
   toast('🗑 Actividad eliminada','warn');
   renderGanancias();
+  await save();
 }
 
-/* =============================================
-   ARMAMENTO
-   ============================================= */
+// ==============================================
+// ARMAS
+// ==============================================
 function renderArmas() {
-  const filtro = document.getElementById('filtro-tipo-arma')?.value || '';
-  let armas = readFile('armas');
+  const filtro = document.getElementById('filtro-tipo-arma')?.value||'';
+  let armas = STATE.armas;
   if (filtro) armas = armas.filter(a=>a.tipo===filtro);
-
   document.getElementById('tabla-armas').innerHTML = armas.map(a=>{
-    const dmgPct = Math.min(100, Math.round((a.dano/200)*100));
+    const dmgPct = Math.min(100,Math.round(((a.dano||0)/200)*100));
     return `
     <tr>
       <td>
-        <div style="font-weight:600;font-size:14px;">${a.nombre}</div>
+        <div style="font-weight:600;font-size:14px;">${a.nombre||''}</div>
         ${a.notas?`<div style="font-size:11px;color:var(--text-3);margin-top:2px;">${a.notas}</div>`:''}
       </td>
-      <td>${badgeTipo(a.tipo)}</td>
+      <td>${badgeTipo(a.tipo||'pistola')}</td>
       <td>
         <div class="damage-bar">
-          <div class="damage-val">${a.dano}</div>
+          <div class="damage-val">${a.dano||0}</div>
           <div style="flex:1;background:var(--bg-surface);border-radius:2px;height:4px;overflow:hidden;">
-            <div style="height:100%;width:${dmgPct}%;background:${a.dano>=120?'var(--gold)':a.dano>=80?'var(--accent2)':'var(--blue)'};border-radius:2px;"></div>
+            <div style="height:100%;width:${dmgPct}%;background:${(a.dano||0)>=120?'var(--gold)':(a.dano||0)>=80?'var(--accent2)':'var(--blue)'};border-radius:2px;"></div>
           </div>
         </div>
       </td>
-      <td>${badgeRareza(a.rareza)}</td>
-      <td style="font-family:var(--font-mono);font-size:13px;font-weight:600;">${a.cantidad}</td>
+      <td>${badgeRareza(a.rareza||'comun')}</td>
+      <td style="font-family:var(--font-mono);font-size:13px;font-weight:600;">${a.cantidad||0}</td>
       <td style="font-family:var(--font-mono);font-size:13px;color:var(--text-3)">${a.asignadas||0}</td>
-      <td>
-        <div class="action-group">
-          <button class="btn btn-ghost btn-sm" onclick="editarArma(${a.id})">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="eliminarArma(${a.id})">🗑</button>
-        </div>
-      </td>
+      <td><div class="action-group">
+        <button class="btn btn-ghost btn-sm" onclick="editarArma(${a.id})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarArma(${a.id})">🗑</button>
+      </div></td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" class="empty-state">SIN ARMAS EN INVENTARIO</td></tr>';
   updateBadges();
@@ -2042,7 +1600,7 @@ function renderArmas() {
 
 function abrirModalArma() {
   document.getElementById('arma-edit-id').value='';
-  ['a-nombre','a-dano','a-cantidad','a-notas'].forEach(id=>document.getElementById(id).value='');
+  ['a-nombre','a-dano','a-notas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-tipo').value='pistola';
   document.getElementById('a-rareza').value='comun';
   document.getElementById('a-cantidad').value=1;
@@ -2051,7 +1609,7 @@ function abrirModalArma() {
 }
 
 function editarArma(id) {
-  const a = readFile('armas').find(x=>x.id===id);
+  const a = STATE.armas.find(x=>x.id===id);
   if(!a) return;
   document.getElementById('arma-edit-id').value=id;
   document.getElementById('a-nombre').value=a.nombre;
@@ -2064,129 +1622,110 @@ function editarArma(id) {
   abrirModal('modal-arma');
 }
 
-function guardarArma() {
+async function guardarArma() {
   const nombre = document.getElementById('a-nombre').value.trim();
   const dano = Number(document.getElementById('a-dano').value);
   const cantidad = Number(document.getElementById('a-cantidad').value)||1;
   if(!nombre||!dano) { toast('Nombre y daño requeridos','err'); return; }
-
-  const armas = readFile('armas');
+  const datos = { nombre, tipo:document.getElementById('a-tipo').value, dano, rareza:document.getElementById('a-rareza').value, cantidad, notas:document.getElementById('a-notas').value.trim() };
   const editId = document.getElementById('arma-edit-id').value;
-  const datos = { nombre, tipo: document.getElementById('a-tipo').value, dano, rareza: document.getElementById('a-rareza').value, cantidad, notas: document.getElementById('a-notas').value.trim() };
-
   if(editId) {
-    const idx = armas.findIndex(a=>a.id===Number(editId));
-    if(idx>=0) armas[idx]={...armas[idx],...datos};
+    const idx = STATE.armas.findIndex(a=>a.id===Number(editId));
+    if(idx>=0) STATE.armas[idx]={...STATE.armas[idx],...datos};
     addHistorial('Arma editada', `${nombre} — Daño: ${dano}, Cant: ${cantidad}`);
     toast('✅ Arma actualizada');
   } else {
     datos.id=genId(); datos.asignadas=0;
-    armas.push(datos);
-    addHistorial('Nueva arma', `${nombre} (${datos.tipo}) agregada al arsenal`);
-    toast('✅ Arma agregada al arsenal');
+    STATE.armas.push(datos);
+    addHistorial('Nueva arma', `${nombre} (${datos.tipo}) al arsenal`);
+    toast('✅ Arma agregada');
   }
-
-  writeFile('armas', armas);
-  addLog(`Arsenal actualizado: ${nombre}`, 'gold');
+  addLog(`Arsenal: ${nombre}`, 'gold');
   cerrarModal('modal-arma');
-  renderArmas();
-  renderDashboard();
+  renderArmas(); renderDashboard();
+  await save();
 }
 
-function eliminarArma(id) {
-  const a = readFile('armas').find(x=>x.id===id);
+async function eliminarArma(id) {
+  const a = STATE.armas.find(x=>x.id===id);
   if(!a) return;
   if(!confirm(`¿Eliminar "${a.nombre}" del arsenal?`)) return;
-  writeFile('armas', readFile('armas').filter(x=>x.id!==id));
-  addHistorial('Arma eliminada', `${a.nombre} removida del arsenal`);
+  STATE.armas = STATE.armas.filter(x=>x.id!==id);
+  addHistorial('Arma eliminada', `${a.nombre} removida`);
   toast('🗑 Arma eliminada','warn');
   renderArmas();
+  await save();
 }
 
-/* =============================================
-   ASIGNACIONES
-   ============================================= */
+// ==============================================
+// ASIGNACIONES
+// ==============================================
 function renderAsignaciones() {
-  const asigs = readFile('asignaciones');
-  document.getElementById('tabla-asignaciones').innerHTML = asigs.slice().reverse().map(a=>`
+  document.getElementById('tabla-asignaciones').innerHTML = STATE.asignaciones.slice().reverse().map(a=>`
     <tr>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${a.fecha}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">${a.fecha||''}</td>
       <td><div style="display:flex;align-items:center;gap:6px;">
         <div class="member-avatar" style="width:24px;height:24px;font-size:9px;">${avatarLetras(a.miembro)}</div>
         ${a.miembro}
       </div></td>
-      <td style="font-weight:600">${a.arma}</td>
-      <td><span class="badge badge-${a.accion==='asignar'?'activo':'inactivo'}">${a.accion.toUpperCase()} x${a.cantidad}</span></td>
+      <td style="font-weight:600">${a.arma||''}</td>
+      <td><span class="badge badge-${a.accion==='asignar'?'activo':'inactivo'}">${(a.accion||'').toUpperCase()} x${a.cantidad||1}</span></td>
       <td style="font-size:12px;color:var(--text-3)">${a.notas||'—'}</td>
     </tr>
   `).join('') || '<tr><td colspan="5" class="empty-state">SIN ASIGNACIONES</td></tr>';
 }
 
 function abrirModalAsignacion() {
-  const usuarios = readFile('usuarios');
-  const armas = readFile('armas');
-  document.getElementById('as-miembro').innerHTML = usuarios.map(u=>`<option value="${u.nombre}">${u.nombre}</option>`).join('');
-  document.getElementById('as-arma').innerHTML = armas.map(a=>`<option value="${a.nombre}">${a.nombre} (x${a.cantidad})</option>`).join('');
+  document.getElementById('as-miembro').innerHTML = STATE.usuarios.map(u=>`<option value="${u.nombre}">${u.nombre}</option>`).join('');
+  document.getElementById('as-arma').innerHTML = STATE.armas.map(a=>`<option value="${a.nombre}">${a.nombre} (x${a.cantidad})</option>`).join('');
   document.getElementById('as-accion').value='asignar';
   document.getElementById('as-cantidad').value=1;
   document.getElementById('as-notas').value='';
   abrirModal('modal-asignacion');
 }
 
-function guardarAsignacion() {
+async function guardarAsignacion() {
   const miembro = document.getElementById('as-miembro').value;
   const armaName = document.getElementById('as-arma').value.split(' (')[0];
   const accion = document.getElementById('as-accion').value;
   const cantidad = Number(document.getElementById('as-cantidad').value)||1;
   const notas = document.getElementById('as-notas').value.trim();
 
-  const armas = readFile('armas');
-  const armaIdx = armas.findIndex(a=>a.nombre===armaName);
+  const armaIdx = STATE.armas.findIndex(a=>a.nombre===armaName);
   if(armaIdx<0) { toast('Arma no encontrada','err'); return; }
-  const arma = armas[armaIdx];
+  const arma = STATE.armas[armaIdx];
 
-  if(accion==='asignar' && arma.cantidad < cantidad) { toast(`⚠ Solo hay ${arma.cantidad} disponible(s)`,'err'); return; }
-  if(accion==='retirar' && (arma.asignadas||0) < cantidad) { toast(`⚠ Solo hay ${arma.asignadas||0} asignada(s)`,'err'); return; }
+  if(accion==='asignar'&&arma.cantidad<cantidad) { toast(`⚠ Solo hay ${arma.cantidad} disponible(s)`,'err'); return; }
+  if(accion==='retirar'&&(arma.asignadas||0)<cantidad) { toast(`⚠ Solo hay ${arma.asignadas||0} asignada(s)`,'err'); return; }
 
   if(accion==='asignar') { arma.cantidad-=cantidad; arma.asignadas=(arma.asignadas||0)+cantidad; }
   else { arma.cantidad+=cantidad; arma.asignadas=Math.max(0,(arma.asignadas||0)-cantidad); }
 
-  armas[armaIdx]=arma;
-  writeFile('armas', armas);
+  STATE.asignaciones.push({ id:genId(), miembro, arma:armaName, accion, cantidad, notas, fecha:new Date().toLocaleDateString('es') });
 
-  const asigs = readFile('asignaciones');
-  asigs.push({ id:genId(), miembro, arma:armaName, accion, cantidad, notas, fecha: new Date().toLocaleDateString('es') });
-  writeFile('asignaciones', asigs);
-
-  // Actualizar armas del usuario
-  const usuarios = readFile('usuarios');
-  const uIdx = usuarios.findIndex(u=>u.nombre===miembro);
+  const uIdx = STATE.usuarios.findIndex(u=>u.nombre===miembro);
   if(uIdx>=0) {
-    if(!usuarios[uIdx].armas) usuarios[uIdx].armas=[];
-    if(accion==='asignar') { for(let i=0;i<cantidad;i++) usuarios[uIdx].armas.push(armaName); }
-    else { for(let i=0;i<cantidad;i++) { const idx=usuarios[uIdx].armas.indexOf(armaName); if(idx>=0) usuarios[uIdx].armas.splice(idx,1); } }
-    writeFile('usuarios', usuarios);
+    if(!STATE.usuarios[uIdx].armas) STATE.usuarios[uIdx].armas=[];
+    if(accion==='asignar') { for(let i=0;i<cantidad;i++) STATE.usuarios[uIdx].armas.push(armaName); }
+    else { for(let i=0;i<cantidad;i++) { const ix=STATE.usuarios[uIdx].armas.indexOf(armaName); if(ix>=0) STATE.usuarios[uIdx].armas.splice(ix,1); } }
   }
 
-  addHistorial('Asignación de arma', `${accion.toUpperCase()} ${armaName} x${cantidad} → ${miembro}`);
+  addHistorial('Asignación', `${accion.toUpperCase()} ${armaName} x${cantidad} → ${miembro}`);
   addLog(`${accion}: ${armaName} x${cantidad} → ${miembro}`, accion==='asignar'?'gold':'red');
   toast(`✅ Arma ${accion==='asignar'?'asignada':'retirada'}`);
   cerrarModal('modal-asignacion');
-  renderAsignaciones();
-  renderArmas();
-  renderMiembros();
+  renderAsignaciones(); renderArmas(); renderMiembros();
+  await save();
 }
 
-/* =============================================
-   HISTORIAL
-   ============================================= */
+// ==============================================
+// HISTORIAL
+// ==============================================
 function renderHistorial() {
-  const hist = readFile('historial');
   const typeIcon = a => a.includes('elimin')||a.includes('Elimin')?'🔴':a.includes('Nuevo')||a.includes('Nueva')?'🟢':a.includes('edit')||a.includes('Edit')?'🔵':a.includes('Asign')?'🟡':'⚪';
-
-  document.getElementById('historial-feed').innerHTML = hist.length === 0
+  document.getElementById('historial-feed').innerHTML = STATE.historial.length===0
     ? '<div class="empty-state">SIN HISTORIAL DE ACTIVIDADES</div>'
-    : hist.map(h=>`
+    : STATE.historial.map(h=>`
     <div class="log-item" style="background:var(--bg-card);border:1px solid var(--border);border-radius:4px;margin-bottom:6px;">
       <span style="font-size:16px;">${typeIcon(h.accion)}</span>
       <div style="flex:1;">
@@ -2198,88 +1737,84 @@ function renderHistorial() {
   `).join('');
 }
 
-function limpiarHistorial() {
-  if(!confirm('¿Limpiar todo el historial? Esta acción no se puede deshacer.')) return;
-  writeFile('historial', []);
+async function limpiarHistorial() {
+  if(!confirm('¿Limpiar todo el historial?')) return;
+  STATE.historial = [];
   toast('🗑 Historial limpiado','warn');
   renderHistorial();
+  await save();
 }
 
-/* =============================================
-   BÚSQUEDA GLOBAL
-   ============================================= */
+// ==============================================
+// BÚSQUEDA
+// ==============================================
 function buscarGlobal(q) {
-  if (!q) { renderMiembros(); return; }
+  if(!q) { renderMiembros(); return; }
   renderMiembros(q);
-  // Si no está en el panel de miembros, llevarlo ahí
-  if (!document.getElementById('panel-miembros').classList.contains('active')) {
+  if(!document.getElementById('panel-miembros').classList.contains('active')) {
     showPanel('miembros', document.querySelectorAll('.nav-item')[1]);
   }
 }
 
-function highlight(text, q) {
-  if (!q) return text;
-  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-  return text.replace(re, '<mark>$1</mark>');
-}
-
-/* =============================================
-   EXPORTAR ARCHIVOS .TXT
-   ============================================= */
-function exportarTodo() {
-  const archivos = {
-    'usuarios.txt': readFile('usuarios'),
-    'pagos.txt': readFile('pagos'),
-    'caja.txt': readFile('caja'),
-    'ganancias.txt': readFile('ganancias'),
-    'armas.txt': readFile('armas'),
-    'asignaciones.txt': readFile('asignaciones'),
-    'historial.txt': readFile('historial'),
+// ==============================================
+// EXPORT / IMPORT JSON BACKUP
+// ==============================================
+function exportarJSON() {
+  const backup = {
+    _exportDate: new Date().toISOString(),
+    _version: 'ccng-v2.5',
+    ...STATE
   };
-
-  let combinado = '// ============================================\n';
-  combinado += '// CCNG - COMANDO CRIMINAL NUEVA GENERACIÓN\n';
-  combinado += '// Exportación de base de datos\n';
-  combinado += '// Fecha: ' + new Date().toLocaleString('es') + '\n';
-  combinado += '// ============================================\n\n';
-
-  for (const [archivo, datos] of Object.entries(archivos)) {
-    combinado += `// ---- ${archivo.toUpperCase()} ----\n`;
-    combinado += JSON.stringify(datos, null, 2) + '\n\n';
-  }
-
-  const blob = new Blob([combinado], { type: 'text/plain;charset=utf-8' });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'ccng_database_' + Date.now() + '.txt';
+  a.download = `ccng_backup_${new Date().toISOString().split('T')[0]}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  addHistorial('Exportación', 'Base de datos exportada a archivo .txt');
-  addLog('Base de datos exportada', 'gold');
-  toast('✅ Archivos .txt exportados');
+  addHistorial('Exportación', 'Backup JSON exportado');
+  addLog('Backup exportado ✓', 'gold');
+  toast('✅ Backup JSON exportado');
 }
 
-/* =============================================
-   MODALES
-   ============================================= */
-function abrirModal(id) {
-  document.getElementById(id).classList.add('open');
+function importarJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.usuarios || !data.config) {
+        toast('⚠ Archivo inválido — no es un backup CCNG','err');
+        return;
+      }
+      if (!confirm(`¿Restaurar backup del ${data._exportDate||'fecha desconocida'}?\nEsto reemplazará TODOS los datos actuales.`)) return;
+      STATE = mergeState(data);
+      await save();
+      refreshAllPanels();
+      addHistorial('Importación', `Backup restaurado desde archivo`);
+      addLog('Backup importado y sincronizado ✓', 'gold');
+      toast('✅ Backup restaurado y sincronizado');
+    } catch(err) {
+      toast('⚠ Error al leer el archivo','err');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // reset input
 }
 
-function cerrarModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
+// ==============================================
+// MODALES
+// ==============================================
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// Cerrar modal al hacer clic fuera
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
+    if(e.target===this) this.classList.remove('open');
   });
 });
-
-// Enter en login
-document.getElementById('login-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
 </script>
 </body>
 </html>
