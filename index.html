@@ -1,3 +1,6 @@
+
+raw
+Ccng sistema · HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +20,7 @@
 html,body{height:100%;background:var(--bg-void);color:var(--text-1);font-family:var(--fm);font-size:15px;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg-deep)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
 #app{display:flex;height:100vh}
-
+ 
 /* SIDEBAR */
 #sidebar{width:240px;min-width:240px;background:var(--bg-deep);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;transition:width .2s}
 #sidebar::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(200,0,26,.015) 40px,rgba(200,0,26,.015) 41px);pointer-events:none}
@@ -41,7 +44,7 @@ nav{flex:1;padding:10px 0;overflow-y:auto}
 .atag{display:flex;align-items:center;gap:8px}
 .aav{width:30px;height:30px;border-radius:4px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
 .an{font-size:13px;font-weight:600}.ar{font-size:11px;color:var(--gold);font-family:var(--mono)}
-
+ 
 /* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{height:52px;background:var(--bg-deep);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
@@ -52,16 +55,16 @@ nav{flex:1;padding:10px 0;overflow-y:auto}
 .sb input::placeholder{color:var(--text-3)}
 .clk{font-family:var(--mono);font-size:11px;color:var(--text-3)}
 #content{flex:1;overflow-y:auto;padding:24px}
-
+ 
 /* SYNC BAR */
 #syncbar{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:4px 24px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--text-3);flex-shrink:0}
 #syncbar.syncing{color:var(--amber)}#syncbar.synced{color:var(--green)}#syncbar.error{color:var(--red)}
 .sdot{width:5px;height:5px;border-radius:50%;background:currentColor}
-
+ 
 /* PANELS */
 .panel{display:none}.panel.active{display:block;animation:fi .2s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
+ 
 /* STATS */
 .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
 .sc{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:16px;position:relative;overflow:hidden}
@@ -71,12 +74,12 @@ nav{flex:1;padding:10px 0;overflow-y:auto}
 .sv{font-family:var(--head);font-size:26px;font-weight:700;line-height:1}
 .ss{font-size:11px;color:var(--text-3);margin-top:4px}
 .si{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.06}
-
+ 
 /* SECTION HEADER */
 .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .st2{font-family:var(--head);font-size:12px;font-weight:700;color:var(--text-2);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .st2::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:1px}
-
+ 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:4px;font-family:var(--fm);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent}
 .btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-p:hover{background:var(--accent2)}
@@ -86,7 +89,7 @@ nav{flex:1;padding:10px 0;overflow-y:auto}
 .btn-gold{background:rgba(212,168,67,.15);color:var(--gold);border-color:rgba(212,168,67,.3)}.btn-gold:hover{background:rgba(212,168,67,.25)}
 .btn-b{background:rgba(59,130,246,.15);color:var(--blue);border-color:rgba(59,130,246,.3)}.btn-b:hover{background:rgba(59,130,246,.25)}
 .btn-sm{padding:4px 10px;font-size:12px}
-
+ 
 /* TABLE */
 .tw{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;overflow:hidden}
 table{width:100%;border-collapse:collapse}
@@ -94,7 +97,7 @@ thead tr{background:rgba(200,0,26,.08);border-bottom:1px solid var(--border)}
 th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);padding:10px 14px;text-align:left;font-weight:400}
 td{padding:11px 14px;font-size:13px;border-bottom:1px solid rgba(30,45,71,.5);vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hover)}
-
+ 
 /* BADGES */
 .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:1px}
 .b-activo{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
@@ -105,7 +108,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .b-pendiente{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
 .b-busqueda{background:rgba(239,68,68,.2);color:var(--red);border:1px solid rgba(239,68,68,.4);animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
-
+ 
 /* MODAL */
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center}
 .mo.open{display:flex}
@@ -116,7 +119,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .mc{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--text-2);cursor:pointer;font-size:16px;transition:all .15s}
 .mc:hover{border-color:var(--accent);color:var(--accent2)}
 .mb{padding:22px}
-
+ 
 /* FORM */
 .fr{margin-bottom:16px}
 .fr label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text-3);text-transform:uppercase;margin-bottom:6px}
@@ -126,7 +129,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .fa{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-
+ 
 /* LOG */
 .lf{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-height:280px;overflow-y:auto}
 .li{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(30,45,71,.5);font-family:var(--mono);font-size:11px;line-height:1.5}
@@ -134,15 +137,15 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .lt{color:var(--text-3);flex-shrink:0}.ld{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .ld.r{background:var(--accent)}.ld.g{background:var(--green)}.ld.b{background:var(--blue)}.ld.gold{background:var(--gold)}
 .lm{color:var(--text-2)}.lm strong{color:var(--text-1)}
-
+ 
 /* MEMBER AVATAR */
 .mav{width:32px;height:32px;border-radius:4px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
 .mc2{display:flex;align-items:center;gap:10px}
 .mn{font-weight:600;font-size:13px}.mid{font-family:var(--mono);font-size:10px;color:var(--text-3)}
-
+ 
 /* TOAST */
 #toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:6px;padding:12px 18px;font-size:13px;color:var(--text-1);display:none;z-index:9999;font-family:var(--mono)}
-
+ 
 /* ECONOMY */
 .ec{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:20px}
 .etotal{font-family:var(--head);font-size:38px;font-weight:900;color:var(--gold);line-height:1}
@@ -151,7 +154,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .db-bar{display:flex;align-items:center;gap:8px}
 .db-val{font-family:var(--mono);font-size:11px;width:28px;text-align:right;color:var(--text-2)}
 .empty{text-align:center;padding:40px;color:var(--text-3);font-family:var(--mono);font-size:12px;letter-spacing:1px}
-
+ 
 /* ANUNCIOS */
 .anuncio-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden}
 .anuncio-card.busqueda{border-color:rgba(239,68,68,.5);border-left:4px solid var(--red)}
@@ -162,12 +165,12 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .anuncio-cuerpo{font-size:13px;color:var(--text-2);line-height:1.6}
 .anuncio-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .respuesta-item{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:8px 12px;margin-top:8px;font-size:12px}
-
+ 
 /* NOMINA */
 .nomina-card{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:10px}
 .nc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .nc-sueldo{font-family:var(--head);font-size:18px;color:var(--gold);font-weight:700}
-
+ 
 /* DATABASE */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:24px}
 .fcard{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px 14px;cursor:pointer;transition:all .18s;position:relative;text-align:center}
@@ -188,14 +191,14 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .fdesc{font-size:11px;color:var(--text-2);margin-top:6px;line-height:1.4;border-top:1px solid var(--border);padding-top:6px}
 .filedel{position:absolute;top:6px;right:6px;width:22px;height:22px;background:rgba(239,68,68,.8);border:none;border-radius:3px;color:#fff;font-size:11px;display:none;align-items:center;justify-content:center;cursor:pointer}
 .filecard:hover .filedel{display:flex}
-
+ 
 /* LIGHTBOX */
 #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 #lb.open{display:flex}
 #lb img{max-width:90vw;max-height:78vh;border-radius:6px;border:1px solid var(--border)}
 #lb-cap{font-family:var(--mono);font-size:12px;color:var(--text-2);text-align:center;max-width:600px}
 #lb-x{position:absolute;top:20px;right:24px;width:36px;height:36px;background:rgba(200,0,26,.3);border:1px solid var(--accent);border-radius:6px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
+ 
 /* LOGIN */
 #ls{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;background:#080a0f;}
 .lbox{background:rgba(13,17,23,.95);border:1px solid rgba(200,0,26,.35);border-top:2px solid var(--accent);border-radius:10px;padding:30px 36px;width:390px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
@@ -204,7 +207,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .ldiv{border:none;border-top:1px solid var(--border);margin:14px 0}
 .lfooter{font-family:var(--mono);font-size:9px;color:var(--text-3);text-align:center;letter-spacing:2px}
 .brand-logo-login{font-family:var(--head);font-size:28px;font-weight:900;color:var(--accent2);letter-spacing:3px;text-align:center;margin-bottom:20px;text-shadow:0 0 20px rgba(255,43,71,.4)}
-
+ 
 /* PORTAL MIEMBRO */
 #portal{display:none;min-height:100vh;background:var(--bg-void)}
 .portal-header{background:var(--bg-deep);border-bottom:2px solid var(--accent);padding:14px 24px;display:flex;align-items:center;gap:16px}
@@ -216,14 +219,14 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .notif-item.unread{background:rgba(34,197,94,.1);border-left:3px solid var(--green)}
 .notif-item.unread-pay{background:rgba(212,168,67,.08);border-left:3px solid var(--gold)}
 .bc-pill{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;background:var(--accent);color:#fff}
-
+ 
 /* NOMINA PRINT */
 @media print{
   #app,#ls,#portal .btn,#portal .topbar-portal{display:none !important}
   .nomina-print{display:block !important}
 }
 .nomina-print{display:none}
-
+ 
 /* RANGO BADGE */
 .rb{display:inline-block;padding:3px 10px;border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:1px;font-weight:700}
 .rb-ccng-lider{background:rgba(212,168,67,.25);color:var(--gold);border:1px solid rgba(212,168,67,.5)}
@@ -239,7 +242,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 .rb-gc9-sicario1{background:rgba(74,85,104,.3);color:var(--text-2);border:1px solid var(--border)}
 .rb-gc9-narco2{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
 .rb-gc9-narco1{background:rgba(74,85,104,.25);color:var(--text-2);border:1px solid var(--border)}
-
+ 
 @media(max-width:900px){
   #sidebar{width:58px;min-width:58px}
   .brand-sub,.brand-status,.ns,.ni span:not(.ico),.nb,.an,.ar{display:none}
@@ -250,7 +253,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
 </style>
 </head>
 <body>
-
+ 
 <!-- LOGIN SCREEN -->
 <div id="ls">
   <div class="brand-logo-login">⬛ CCNG</div>
@@ -264,7 +267,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="lfooter">ACCESO RESTRINGIDO — SOLO PERSONAL AUTORIZADO</div>
   </div>
 </div>
-
+ 
 <!-- ADMIN APP -->
 <div id="app" style="display:none">
   <div id="sidebar">
@@ -305,7 +308,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
       </div>
     </div>
   </div>
-
+ 
   <div id="main">
     <div class="topbar">
       <div class="ptitle" id="ptitle">Dashboard</div>
@@ -316,7 +319,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
       </div>
     </div>
     <div id="syncbar"><div class="sdot"></div><span id="stxt">Iniciando...</span><span style="margin-left:auto;opacity:.5" id="stime"></span></div>
-
+ 
     <div id="content">
       <!-- DASHBOARD -->
       <div class="panel active" id="p-dashboard">
@@ -328,16 +331,16 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         <div class="sh"><div class="st2">Miembros recientes</div></div>
         <div class="tw"><table><thead><tr><th>Miembro</th><th>Organización</th><th>Rango</th><th>Estado</th><th>Sueldo</th></tr></thead><tbody id="d-mb"></tbody></table></div>
       </div>
-
+ 
       <!-- MIEMBROS -->
       <div class="panel" id="p-miembros">
         <div class="sh"><div class="st2">Gestión de Miembros</div><button class="btn btn-p" onclick="openMiembro()">+ Nuevo Miembro</button></div>
         <div class="tw"><table><thead><tr><th>Miembro</th><th>Org.</th><th>Rango</th><th>Estado</th><th>Usuario</th><th>Balance</th><th>Ingreso</th><th>Acciones</th></tr></thead><tbody id="t-mb"></tbody></table></div>
       </div>
-
+ 
       <!-- RANGOS / JERARQUÍA -->
       <div class="panel" id="p-rangos"><div id="r-content"></div></div>
-
+ 
       <!-- CAJA -->
       <div class="panel" id="p-caja">
         <div class="g2" style="gap:20px;margin-bottom:20px">
@@ -356,7 +359,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         <div class="sh"><div class="st2">Historial de Caja</div></div>
         <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Descripción</th><th>Balance</th></tr></thead><tbody id="t-caja"></tbody></table></div>
       </div>
-
+ 
       <!-- NÓMINA -->
       <div class="panel" id="p-nomina">
         <div class="sh">
@@ -375,20 +378,20 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         </div>
         <div id="t-nomina"></div>
       </div>
-
+ 
       <!-- PAGOS -->
       <div class="panel" id="p-pagos">
         <div class="sh"><div class="st2">Registro de Pagos</div><button class="btn btn-p" onclick="openPago()">+ Nuevo Pago</button></div>
         <div class="tw"><table><thead><tr><th>Fecha</th><th>Miembro</th><th>Monto</th><th>Concepto</th><th>Estado</th><th>Acc.</th></tr></thead><tbody id="t-pagos"></tbody></table></div>
       </div>
-
+ 
       <!-- GANANCIAS -->
       <div class="panel" id="p-ganancias">
         <div class="sh"><div class="st2">Ganancias por Actividad</div><button class="btn btn-p" onclick="openGanancia()">+ Registrar</button></div>
         <div class="sgrid" id="g-stats" style="margin-bottom:20px"></div>
         <div class="tw"><table><thead><tr><th>Fecha</th><th>Actividad</th><th>Tipo</th><th>Ganancia</th><th>Participantes</th><th>Acc.</th></tr></thead><tbody id="t-gan"></tbody></table></div>
       </div>
-
+ 
       <!-- ARMAS -->
       <div class="panel" id="p-armas">
         <div class="sh">
@@ -402,25 +405,25 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         </div>
         <div class="tw"><table><thead><tr><th>Arma</th><th>Tipo</th><th>Daño</th><th>Rareza</th><th>Stock</th><th>Asig.</th><th>Acc.</th></tr></thead><tbody id="t-armas"></tbody></table></div>
       </div>
-
+ 
       <!-- ASIGNACIONES -->
       <div class="panel" id="p-asignaciones">
         <div class="sh"><div class="st2">Asignación de Armas</div><button class="btn btn-p" onclick="openAsig()">+ Asignar Arma</button></div>
         <div class="tw"><table><thead><tr><th>Fecha</th><th>Miembro</th><th>Arma</th><th>Acción</th><th>Notas</th></tr></thead><tbody id="t-asig"></tbody></table></div>
       </div>
-
+ 
       <!-- ANUNCIOS -->
       <div class="panel" id="p-anuncios">
         <div class="sh"><div class="st2">Anuncios</div><button class="btn btn-p" onclick="openAnuncio()">+ Nuevo Anuncio</button></div>
         <div id="lista-anuncios"></div>
       </div>
-
+ 
       <!-- BÚSQUEDA Y CAPTURA -->
       <div class="panel" id="p-busqueda">
         <div class="sh"><div class="st2">Búsqueda y Captura</div><button class="btn btn-d" onclick="openBusqueda()">🔴 Emitir Orden</button></div>
         <div id="lista-busqueda"></div>
       </div>
-
+ 
       <!-- BASE DE DATOS -->
       <div class="panel" id="p-basedatos">
         <div class="sh">
@@ -437,7 +440,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
           <div class="empty" id="db-empty" style="display:none">CARPETA VACÍA</div>
         </div>
       </div>
-
+ 
       <!-- HISTORIAL -->
       <div class="panel" id="p-historial">
         <div class="sh"><div class="st2">Historial</div><button class="btn btn-g btn-sm" onclick="limpiarHist()">🗑 Limpiar</button></div>
@@ -446,7 +449,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     </div>
   </div>
 </div>
-
+ 
 <!-- PORTAL MIEMBRO -->
 <div id="portal">
   <div class="portal-header">
@@ -459,7 +462,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
       <button class="btn btn-g btn-sm" onclick="doLogout()">⏻ Salir</button>
     </div>
   </div>
-
+ 
   <!-- Notifs panel -->
   <div id="notif-panel" style="display:none;position:fixed;top:58px;right:24px;width:320px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.5)">
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:2px;display:flex;justify-content:space-between">
@@ -467,7 +470,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     </div>
     <div id="notif-list"></div>
   </div>
-
+ 
   <div class="portal-body">
     <!-- Perfil -->
     <div class="portal-card" style="border-top:3px solid var(--accent)">
@@ -485,7 +488,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         </div>
       </div>
     </div>
-
+ 
     <div class="g2" style="gap:16px;margin-bottom:16px">
       <!-- Pagos del miembro -->
       <div class="portal-card">
@@ -498,13 +501,13 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
         <div id="p-armas-list"></div>
       </div>
     </div>
-
+ 
     <!-- Anuncios en portal -->
     <div class="portal-card">
       <div class="sh"><div class="st2">Anuncios</div></div>
       <div id="p-anuncios-list"></div>
     </div>
-
+ 
     <!-- Búsqueda y captura en portal -->
     <div class="portal-card" id="p-busqueda-section" style="display:none">
       <div class="sh"><div class="st2" style="color:var(--red)">🔴 Búsqueda y Captura Activa</div></div>
@@ -512,7 +515,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     </div>
   </div>
 </div>
-
+ 
 <!-- MODALES ADMIN -->
 <div class="mo" id="m-mb"><div class="md md-lg">
   <div class="mh"><div class="mt" id="m-mb-title">Nuevo Miembro</div><button class="mc" onclick="closeM('m-mb')">✕</button></div>
@@ -536,7 +539,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-mb')">Cancelar</button><button class="btn btn-p" onclick="saveMiembro()">💾 Guardar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-pago"><div class="md">
   <div class="mh"><div class="mt">Registrar Pago</div><button class="mc" onclick="closeM('m-pago')">✕</button></div>
   <div class="mb">
@@ -551,7 +554,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-pago')">Cancelar</button><button class="btn btn-p" onclick="savePago()">💾 Guardar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-gan"><div class="md">
   <div class="mh"><div class="mt">Registrar Actividad</div><button class="mc" onclick="closeM('m-gan')">✕</button></div>
   <div class="mb">
@@ -567,7 +570,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-gan')">Cancelar</button><button class="btn btn-p" onclick="saveGanancia()">💾 Guardar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-arma"><div class="md">
   <div class="mh"><div class="mt" id="m-arma-title">Nueva Arma</div><button class="mc" onclick="closeM('m-arma')">✕</button></div>
   <div class="mb">
@@ -585,7 +588,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-arma')">Cancelar</button><button class="btn btn-p" onclick="saveArma()">💾 Guardar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-asig"><div class="md">
   <div class="mh"><div class="mt">Asignar / Retirar Arma</div><button class="mc" onclick="closeM('m-asig')">✕</button></div>
   <div class="mb">
@@ -601,7 +604,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-asig')">Cancelar</button><button class="btn btn-p" onclick="saveAsig()">💾 Confirmar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-anuncio"><div class="md">
   <div class="mh"><div class="mt">Nuevo Anuncio</div><button class="mc" onclick="closeM('m-anuncio')">✕</button></div>
   <div class="mb">
@@ -614,7 +617,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-anuncio')">Cancelar</button><button class="btn btn-p" onclick="saveAnuncio()">📢 Publicar</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-busqueda"><div class="md">
   <div class="mh"><div class="mt" style="color:var(--red)">🔴 Emitir Orden de Captura</div><button class="mc" onclick="closeM('m-busqueda')">✕</button></div>
   <div class="mb">
@@ -627,7 +630,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-busqueda')">Cancelar</button><button class="btn btn-d" onclick="saveBusqueda()">🔴 Emitir Orden</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-carp"><div class="md">
   <div class="mh"><div class="mt">Nueva Carpeta</div><button class="mc" onclick="closeM('m-carp')">✕</button></div>
   <div class="mb">
@@ -637,7 +640,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-carp')">Cancelar</button><button class="btn btn-p" onclick="saveCarpeta()">📁 Crear</button></div>
   </div>
 </div></div>
-
+ 
 <div class="mo" id="m-arch"><div class="md md-lg">
   <div class="mh"><div class="mt">Agregar Archivo</div><button class="mc" onclick="closeM('m-arch')">✕</button></div>
   <div class="mb">
@@ -651,7 +654,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-arch')">Cancelar</button><button class="btn btn-p" onclick="saveArchivo()">💾 Guardar</button></div>
   </div>
 </div></div>
-
+ 
 <!-- Modal ascenso -->
 <div class="mo" id="m-ascenso"><div class="md">
   <div class="mh"><div class="mt">⬆ Ascender Miembro</div><button class="mc" onclick="closeM('m-ascenso')">✕</button></div>
@@ -663,7 +666,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-ascenso')">Cancelar</button><button class="btn btn-gold" onclick="saveAscenso()">⬆ Ascender</button></div>
   </div>
 </div></div>
-
+ 
 <!-- Modal responder anuncio (portal) -->
 <div class="mo" id="m-resp"><div class="md">
   <div class="mh"><div class="mt">Responder Anuncio</div><button class="mc" onclick="closeM('m-resp')">✕</button></div>
@@ -673,15 +676,15 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     <div class="fa"><button class="btn btn-g" onclick="closeM('m-resp')">Cancelar</button><button class="btn btn-p" onclick="saveRespuesta()">📨 Enviar</button></div>
   </div>
 </div></div>
-
+ 
 <!-- LIGHTBOX -->
 <div id="lb" onclick="if(event.target===this)closeLB()">
   <button id="lb-x" onclick="closeLB()">✕</button>
   <img id="lb-img" src="" alt=""><div id="lb-cap"></div>
 </div>
-
+ 
 <div id="toast"></div>
-
+ 
 <script>
 // =============================================
 // FIREBASE
@@ -697,9 +700,9 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--bg-hov
     window.dispatchEvent(new Event('fbReady'));
   `;document.head.appendChild(s);
 })();
-
+ 
 async function sha256(msg){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-
+ 
 // =============================================
 // JERARQUÍA
 // =============================================
@@ -727,12 +730,12 @@ function getRangoInfo(key){
   return {key,label:key,sueldo:0,cls:'rb-gc9-sicario1'};
 }
 function bRango(key){const r=getRangoInfo(key);return `<span class="rb ${r.cls}">${r.label}</span>`;}
-
+ 
 // =============================================
 // ADMIN CREDENTIALS
 // =============================================
 const ADMIN_HASH='825e3122002205254da9283903a4f71a329ee1f7f18b67bc70ffc33bd56a36e3';
-
+ 
 // =============================================
 // STATE
 // =============================================
@@ -740,24 +743,24 @@ const EMPTY=()=>({usuarios:[],pagos:[],caja:[],ganancias:[],armas:[],asignacione
 let S=EMPTY();
 let _saving=false,_unsub=null,_curFolder=null,_curSession=null;
 let _idc=Date.now();function gid(){return ++_idc;}
-
+ 
 const syslog=[];
 function addLog(msg,t='b'){syslog.unshift({time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),msg,t,ts:Date.now()});if(syslog.length>100)syslog.pop();renderDashLog();}
-
+ 
 function toast(msg,t='ok'){const el=document.getElementById('toast');el.textContent=msg;el.style.borderLeftColor=t==='ok'?'var(--green)':t==='err'?'var(--red)':'var(--gold)';el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2800);}
-
+ 
 setInterval(()=>document.getElementById('clk').textContent=new Date().toLocaleTimeString('es'),1000);
-
+ 
 function setSS(cls,msg){const b=document.getElementById('syncbar');b.className=cls;document.getElementById('stxt').textContent=msg;document.getElementById('stime').textContent=new Date().toLocaleTimeString('es');}
 function setConn(on){document.getElementById('cdot').className='dot '+(on?'live':'off');const t=document.getElementById('ctext');t.className='st '+(on?'on':'off');t.textContent=on?'FIREBASE ONLINE':'MODO LOCAL';}
-
+ 
 // =============================================
 // LOCAL STORAGE
 // =============================================
 const LS='ccng_v4';
 function saveLocal(s){try{localStorage.setItem(LS,JSON.stringify(s));}catch(e){}}
 function loadLocal(){try{const r=localStorage.getItem(LS);if(!r)return null;const p=JSON.parse(r);return p._v?p:null;}catch(e){return null;}}
-
+ 
 // =============================================
 // FIREBASE
 // =============================================
@@ -766,33 +769,75 @@ async function fbLoad(){if(!window._fbOk)return null;try{const snap=await window
 async function fbSave(s){if(!window._fbOk||_saving)return false;_saving=true;setSS('syncing','Sincronizando...');try{await window._setDoc(window._doc(window._db,'database','ccng_data'),{...JSON.parse(JSON.stringify(s)),_lastUpdate:new Date().toISOString()});setSS('synced','✓ Sincronizado');saveLocal(s);_saving=false;return true;}catch(e){setSS('error','⚠ Error');saveLocal(s);_saving=false;return false;}}
 function fbSub(){if(!window._fbOk)return;try{_unsub=window._onSnap(window._doc(window._db,'database','ccng_data'),snap=>{if(snap.exists()){S=merge(snap.data());saveLocal(S);if(_curSession&&_curSession.isAdmin)renderAll();else if(_curSession)renderPortal();setConn(true);setSS('synced','✓ Tiempo real');}},()=>{setConn(false);setSS('error','⚠ Sin conexión');});}catch(e){}}
 async function save(){await fbSave(S);updateBadges();}
-
+ 
 // =============================================
 // AUTH — determina si admin o miembro
 // =============================================
+ 
+// Carga datos antes de validar al miembro
+async function getDataForLogin(){
+  // 1. Intenta local storage primero (rápido)
+  const local=loadLocal();
+  if(local&&local.usuarios&&local.usuarios.length>0){
+    S=merge(local);
+    return;
+  }
+  // 2. Intenta Firebase
+  if(window._fbOk){
+    try{
+      const remote=await fbLoad();
+      if(remote){S=merge(remote);saveLocal(S);}
+    }catch(e){}
+  }else{
+    // Espera hasta 3 segundos a que Firebase esté listo
+    await new Promise(res=>{
+      let tries=0;
+      const t=setInterval(async()=>{
+        tries++;
+        if(window._fbOk){
+          clearInterval(t);
+          try{const remote=await fbLoad();if(remote){S=merge(remote);saveLocal(S);}}catch(e){}
+          res();
+        }else if(tries>15){clearInterval(t);res();}
+      },200);
+    });
+  }
+}
+ 
 async function doLogin(){
   const u=document.getElementById('lu').value.trim();
   const p=document.getElementById('lp').value;
   const err=document.getElementById('lerr');
+  const btn=document.querySelector('#ls .btn-p');
   if(!u||!p){err.textContent='Ingresa usuario y contraseña.';return;}
+ 
+  // Admin check (no necesita cargar datos)
   const h=await sha256(p);
-  // Admin check
   if(u==='Capitactix'&&h===ADMIN_HASH){
     _curSession={isAdmin:true,username:u};
     showAdmin();return;
   }
-  // Miembro check (password stored as plain for simplicity — hash at save)
-  const miembro=S.usuarios.find(x=>x.username===u);
+ 
+  // Para miembros: cargar datos primero
+  btn.textContent='Verificando...';btn.disabled=true;
+  err.textContent='';
+  try{
+    await getDataForLogin();
+  }catch(e){}
+  btn.textContent='🔐 ACCEDER AL SISTEMA';btn.disabled=false;
+ 
+  // Buscar miembro con esos credentials
+  const miembro=S.usuarios.find(x=>x.username&&x.username.toLowerCase()===u.toLowerCase());
   if(miembro){
-    const mh=await sha256(miembro.password||'');
-    if(h===mh||miembro.password===p){
+    // Compara contraseña (plain text directo)
+    if(miembro.password===p){
       _curSession={isAdmin:false,id:miembro.id,username:u};
       showPortal(miembro);return;
     }
   }
   err.textContent='⛔ Credenciales incorrectas.';setTimeout(()=>err.textContent='',3000);
 }
-
+ 
 function showAdmin(){
   document.getElementById('ls').style.display='none';
   document.getElementById('portal').style.display='none';
@@ -803,15 +848,17 @@ function showAdmin(){
   addLog('Sesión admin iniciada','g');
   initApp();
 }
-
+ 
 function showPortal(miembro){
   document.getElementById('ls').style.display='none';
   document.getElementById('app').style.display='none';
   document.getElementById('portal').style.display='block';
   renderPortal();
   addLog(`Portal: ${miembro.nombre}`,'b');
+  // Firebase tiempo real en portal
+  if(!_unsub){const t=()=>{if(window._fbOk)fbSub();else setTimeout(t,400);};t();}
 }
-
+ 
 function doLogout(){
   if(_curSession&&_curSession.isAdmin){if(!confirm('¿Cerrar sesión?'))return;}
   if(_unsub){_unsub();_unsub=null;}
@@ -822,7 +869,7 @@ function doLogout(){
   document.getElementById('lu').value='';
   document.getElementById('lp').value='';
 }
-
+ 
 // =============================================
 // INIT
 // =============================================
@@ -841,7 +888,7 @@ async function initApp(){
     }else setTimeout(tryFB,400);
   };tryFB();
 }
-
+ 
 // =============================================
 // NAVIGATION
 // =============================================
@@ -856,7 +903,7 @@ function showPanel(id,el){
   if(id==='basedatos')renderDB();
   if(id==='nomina')renderNomina();
 }
-
+ 
 function renderAll(){updateBadges();renderDash();renderMiembros();renderRangos();renderCaja();renderNomina();renderPagos();renderGanancias();renderArmas();renderAsig();renderAnuncios();renderBusqueda();renderHist();if(document.getElementById('p-basedatos').classList.contains('active'))renderDB();}
 function updateBadges(){
   document.getElementById('b-mb').textContent=S.usuarios.length;
@@ -864,7 +911,7 @@ function updateBadges(){
   document.getElementById('b-ar').textContent=S.armas.reduce((s,a)=>s+(a.cantidad||0),0);
   document.getElementById('b-an').textContent=(S.anuncios||[]).filter(a=>!a.archivado).length;
 }
-
+ 
 // =============================================
 // HELPERS
 // =============================================
@@ -872,9 +919,9 @@ function av(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().sub
 function fm(n){return '$'+Number(n||0).toLocaleString('es');}
 function addHist(a,d){S.historial.unshift({id:gid(),fecha:new Date().toLocaleString('es'),accion:a,detalle:d});if(S.historial.length>200)S.historial.pop();}
 const tipoArmaIcon={pistola:'🔫',rifle:'🎯',smg:'💥',sniper:'🔭',escopeta:'🪓',melee:'⚔️'};
-
+ 
 function bRar(r){const l={comun:'⚪ Común',raro:'🔵 Raro',epico:'🟣 Épico',legendario:'🟡 Legendario'};return`<span class="badge" style="background:rgba(74,85,104,.3);color:var(--text-2);border:1px solid var(--border)">${l[r]||r}</span>`;}
-
+ 
 // =============================================
 // DASHBOARD
 // =============================================
@@ -896,7 +943,7 @@ function renderDash(){
   renderDashLog();
 }
 function renderDashLog(){const el=document.getElementById('d-log');if(!el)return;const cm={g:'g',r:'r',b:'b',gold:'gold'};el.innerHTML=syslog.slice(0,10).map(l=>`<div class="li"><div class="lt">${l.time}</div><div class="ld ${cm[l.t]||'b'}"></div><div class="lm">${l.msg}</div></div>`).join('')||'<div class="empty">SIN LOGS</div>';}
-
+ 
 // =============================================
 // MIEMBROS
 // =============================================
@@ -912,7 +959,7 @@ function updateAscRangos(){
   if(!sel)return;
   sel.innerHTML=JERARQUIA[org].map(r=>`<option value="${r.key}">${r.label} ${r.sueldo?'('+fm(r.sueldo)+')'  :''}</option>`).join('');
 }
-
+ 
 function renderMiembros(q=''){
   let lst=q?S.usuarios.filter(u=>(u.nombre||'').toLowerCase().includes(q.toLowerCase())):S.usuarios;
   document.getElementById('t-mb').innerHTML=lst.map(u=>`
@@ -932,7 +979,7 @@ function renderMiembros(q=''){
     </tr>
   `).join('')||'<tr><td colspan="8" class="empty">SIN MIEMBROS</td></tr>';
 }
-
+ 
 function openMiembro(){
   document.getElementById('mb-eid').value='';
   document.getElementById('mb-nom').value='';
@@ -983,7 +1030,7 @@ async function saveMiembro(){
   renderMiembros();renderDash();await save();
 }
 async function delMiembro(id){const u=S.usuarios.find(x=>x.id===id);if(!u||!confirm(`¿Eliminar a "${u.nombre}"?`))return;S.usuarios=S.usuarios.filter(x=>x.id!==id);addHist('Eliminado',`"${u.nombre}"`);toast('🗑 Eliminado','warn');renderMiembros();renderDash();await save();}
-
+ 
 // ASCENSO
 function openAscenso(id){
   const u=S.usuarios.find(x=>x.id===id);if(!u)return;
@@ -1010,7 +1057,7 @@ async function saveAscenso(){
   addLog(`Ascenso: ${S.usuarios[i].nombre} → ${getRangoInfo(newRango).label}`,'gold');
   toast('⬆ Ascenso aplicado');closeM('m-ascenso');renderMiembros();renderDash();await save();
 }
-
+ 
 // =============================================
 // JERARQUÍA RENDER
 // =============================================
@@ -1032,7 +1079,7 @@ function renderRangos(){
     </div>`;
   }).join('');
 }
-
+ 
 // =============================================
 // CAJA
 // =============================================
@@ -1053,7 +1100,7 @@ async function registrarMov(){
   addLog(`Caja: ${tipo} ${fm(monto)}`,tipo==='ingreso'?'g':'r');toast(`✅ ${tipo==='ingreso'?'Ingreso':'Egreso'} registrado`);
   renderCaja();renderDash();await save();
 }
-
+ 
 // =============================================
 // NÓMINA
 // =============================================
@@ -1123,7 +1170,7 @@ async function pagarTodos(){
   }
   toast('✅ Todos pagados');renderAll();
 }
-
+ 
 // =============================================
 // PAGOS
 // =============================================
@@ -1161,7 +1208,7 @@ async function mkPagado(id){
   toast('✅ Pagado');renderPagos();await save();
 }
 async function delPago(id){if(!confirm('¿Eliminar?'))return;S.pagos=S.pagos.filter(x=>x.id!==id);toast('🗑','warn');renderPagos();await save();}
-
+ 
 // =============================================
 // GANANCIAS
 // =============================================
@@ -1180,7 +1227,7 @@ async function saveGanancia(){
   addLog(`Ganancia: ${nom} +${fm(monto)}`,'g');toast('✅ Actividad registrada');closeM('m-gan');renderGanancias();renderCaja();renderDash();await save();
 }
 async function delGan(id){if(!confirm('¿Eliminar?'))return;S.ganancias=S.ganancias.filter(x=>x.id!==id);toast('🗑','warn');renderGanancias();await save();}
-
+ 
 // =============================================
 // ARMAS
 // =============================================
@@ -1201,7 +1248,7 @@ function openArma(){document.getElementById('ar-eid').value='';['ar-nom','ar-dan
 function editArma(id){const a=S.armas.find(x=>x.id===id);if(!a)return;document.getElementById('ar-eid').value=id;document.getElementById('ar-nom').value=a.nombre;document.getElementById('ar-tipo').value=a.tipo;document.getElementById('ar-dano').value=a.dano;document.getElementById('ar-rar').value=a.rareza;document.getElementById('ar-cant').value=a.cantidad;document.getElementById('ar-notas').value=a.notas||'';document.getElementById('m-arma-title').textContent='Editar Arma';openM('m-arma');}
 async function saveArma(){const nom=document.getElementById('ar-nom').value.trim(),dano=Number(document.getElementById('ar-dano').value),cant=Number(document.getElementById('ar-cant').value)||1;if(!nom||!dano){toast('Nombre y daño requeridos','err');return;}const d={nombre:nom,tipo:document.getElementById('ar-tipo').value,dano,rareza:document.getElementById('ar-rar').value,cantidad:cant,notas:document.getElementById('ar-notas').value.trim()};const eid=document.getElementById('ar-eid').value;if(eid){const i=S.armas.findIndex(a=>a.id===Number(eid));if(i>=0)S.armas[i]={...S.armas[i],...d};toast('✅ Actualizada');}else{d.id=gid();d.asignadas=0;S.armas.push(d);toast('✅ Arma agregada');}closeM('m-arma');renderArmas();renderDash();await save();}
 async function delArma(id){const a=S.armas.find(x=>x.id===id);if(!a||!confirm(`¿Eliminar "${a.nombre}"?`))return;S.armas=S.armas.filter(x=>x.id!==id);toast('🗑','warn');renderArmas();await save();}
-
+ 
 // =============================================
 // ASIGNACIONES
 // =============================================
@@ -1220,7 +1267,7 @@ async function saveAsig(){
   const ui=S.usuarios.findIndex(u=>u.nombre===mb);if(ui>=0){if(!S.usuarios[ui].armas)S.usuarios[ui].armas=[];if(acc==='asignar')for(let i=0;i<cant;i++)S.usuarios[ui].armas.push(arNom);else for(let i=0;i<cant;i++){const ix=S.usuarios[ui].armas.indexOf(arNom);if(ix>=0)S.usuarios[ui].armas.splice(ix,1);}}
   addLog(`${acc}: ${arNom} x${cant} → ${mb}`,acc==='asignar'?'gold':'r');toast(`✅ Arma ${acc==='asignar'?'asignada':'retirada'}`);closeM('m-asig');renderAsig();renderArmas();renderMiembros();await save();
 }
-
+ 
 // =============================================
 // ANUNCIOS
 // =============================================
@@ -1255,7 +1302,7 @@ async function saveAnuncio(){
   addLog(`Anuncio publicado: "${tit}"`,'gold');toast('📢 Anuncio publicado');closeM('m-anuncio');renderAnuncios();await save();
 }
 async function archivarAnuncio(id){S.anuncios=(S.anuncios||[]).map(a=>a.id===id?{...a,archivado:true}:a);toast('🗑 Archivado','warn');renderAnuncios();await save();}
-
+ 
 // =============================================
 // BÚSQUEDA Y CAPTURA
 // =============================================
@@ -1296,7 +1343,7 @@ async function saveBusqueda(){
 }
 async function cerrarOrden(id){S.busquedas=(S.busquedas||[]).map(b=>b.id===id?{...b,activo:false}:b);toast('✅ Orden cerrada');renderBusqueda();await save();}
 async function delBusqueda(id){if(!confirm('¿Eliminar?'))return;S.busquedas=(S.busquedas||[]).filter(x=>x.id!==id);toast('🗑','warn');renderBusqueda();await save();}
-
+ 
 // =============================================
 // BASE DE DATOS
 // =============================================
@@ -1336,7 +1383,7 @@ async function saveArchivo(){
 async function delArch(id){if(!confirm('¿Eliminar?'))return;S.dbArchivos=(S.dbArchivos||[]).filter(x=>x.id!==id);toast('🗑','warn');renderDB();await save();}
 function openLB(fid){const f=(S.dbArchivos||[]).find(x=>String(x.id)===String(fid));if(!f||!f.imgData)return;document.getElementById('lb-img').src=f.imgData;document.getElementById('lb-cap').textContent=f.titulo;document.getElementById('lb').classList.add('open');}
 function closeLB(){document.getElementById('lb').classList.remove('open');}
-
+ 
 // =============================================
 // HISTORIAL
 // =============================================
@@ -1345,18 +1392,18 @@ function renderHist(){
   document.getElementById('hist-feed').innerHTML=S.historial.length===0?'<div class="empty">SIN HISTORIAL</div>':S.historial.map(h=>`<div class="li" style="background:var(--bg-card);border:1px solid var(--border);border-radius:4px;margin-bottom:6px"><span style="font-size:16px">${ic(h.accion)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text-1)">${h.accion}</div><div style="font-size:11px;color:var(--text-2);margin-top:2px">${h.detalle}</div></div><div class="lt">${h.fecha}</div></div>`).join('');
 }
 async function limpiarHist(){if(!confirm('¿Limpiar historial?'))return;S.historial=[];toast('🗑','warn');renderHist();await save();}
-
+ 
 // =============================================
 // BÚSQUEDA GLOBAL
 // =============================================
 function buscarGlobal(q){renderMiembros(q);}
-
+ 
 // =============================================
 // EXPORT/IMPORT
 // =============================================
 function exportJSON(){const b=new Blob([JSON.stringify({_export:new Date().toISOString(),...S},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`ccng_backup_${new Date().toISOString().split('T')[0]}.json`;a.click();toast('✅ Backup exportado');}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const d=JSON.parse(ev.target.result);if(!d.usuarios||!d.config){toast('Archivo inválido','err');return;}if(!confirm('¿Restaurar backup?'))return;S=merge(d);await save();renderAll();toast('✅ Restaurado');}catch(err){toast('Error al leer','err');}};r.readAsText(f);e.target.value='';}
-
+ 
 // =============================================
 // MODALES
 // =============================================
@@ -1364,12 +1411,12 @@ function openM(id){document.getElementById(id).classList.add('open');}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));closeLB();}});
-
+ 
 // =============================================
 // PORTAL MIEMBRO
 // =============================================
 function getMiembroActual(){if(!_curSession||_curSession.isAdmin)return null;return S.usuarios.find(u=>u.id===_curSession.id)||S.usuarios.find(u=>u.username===_curSession.username);}
-
+ 
 function renderPortal(){
   const u=getMiembroActual();if(!u)return;
   const rInfo=getRangoInfo(u.rango);
@@ -1427,7 +1474,7 @@ function renderPortal(){
     `).join('');
   }else{bqSection.style.display='none';}
 }
-
+ 
 function renderNotifs(u){
   const notifs=(u.notificaciones||[]).slice(0,20);
   document.getElementById('notif-list').innerHTML=notifs.length?notifs.map(n=>`
@@ -1441,14 +1488,14 @@ function renderNotifs(u){
     </div>
   `).join(''):'<div class="empty" style="padding:20px">SIN NOTIFICACIONES</div>';
 }
-
+ 
 function toggleNotifs(){
   const p=document.getElementById('notif-panel');
   const shown=p.style.display!=='none';
   p.style.display=shown?'none':'block';
   if(!shown)marcarTodasLeidas();
 }
-
+ 
 async function marcarTodasLeidas(){
   const u=getMiembroActual();if(!u)return;
   const i=S.usuarios.findIndex(x=>x.id===u.id);
@@ -1458,7 +1505,7 @@ async function marcarTodasLeidas(){
     await save();
   }
 }
-
+ 
 function openResp(anuncioId){document.getElementById('resp-an-id').value=anuncioId;document.getElementById('resp-msg').value='';openM('m-resp');}
 function openRespBq(bqId){document.getElementById('resp-an-id').value='bq_'+bqId;document.getElementById('resp-msg').value='';openM('m-resp');}
 async function saveRespuesta(){
@@ -1477,13 +1524,13 @@ async function saveRespuesta(){
   }
   toast('📨 Respuesta enviada');closeM('m-resp');renderPortal();await save();
 }
-
+ 
 // Click outside notif panel
 document.addEventListener('click',e=>{
   const p=document.getElementById('notif-panel');const b=document.getElementById('p-notif-btn');
   if(p&&b&&!p.contains(e.target)&&!b.contains(e.target))p.style.display='none';
 });
-
+ 
 // =============================================
 // WIRE UP
 // =============================================
@@ -1491,7 +1538,7 @@ document.getElementById('btn-logout').addEventListener('click',doLogout);
 document.getElementById('ni-export').addEventListener('click',exportJSON);
 document.getElementById('ni-import').addEventListener('click',()=>document.getElementById('imp-file').click());
 document.getElementById('imp-file').addEventListener('change',importJSON);
-
+ 
 // Init select rangos on page load
 document.addEventListener('DOMContentLoaded',()=>{updateRangosSelect();updateAscRangos();});
 updateRangosSelect();updateAscRangos();
